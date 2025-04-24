@@ -89,20 +89,5 @@ bool taa3040_set_gain(taa3040_t *const dev, const uint8_t channel, const int gai
  */
 bool taa3040_get_gain(taa3040_t *const dev, const uint8_t channel, int *const gain_db);
 
-/** Write to a device register
- *  @param dev Device context
- *  @param reg Register address
- *  @param value Value to write
- *  @return true if successful, false otherwise
- */
-bool taa3040_write_register(taa3040_t *const dev, const uint8_t page, const uint8_t reg, const uint8_t value);
-
-/** Read from a device register
- *  @param dev Device context
- *  @param reg Register address
- *  @param value Pointer to store read value
- *  @return true if successful, false otherwise
- */
-bool taa3040_read_register(taa3040_t *const dev, const uint8_t page, const uint8_t reg, uint8_t *const value);
 
 #endif // TAA3040_H

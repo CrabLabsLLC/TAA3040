@@ -117,6 +117,28 @@ typedef enum {
     TAA3040_GPIO_MODE_RESERVED
 } taa3040_gpio_config_t;
 
+/**
+ * @brief 
+ * 
+ */
+typedef enum {
+    TAA3040_VREF_QC_3500US  = 0x0,  ///< 3.5ms VREF Quick Charge duration
+    TAA3040_VREF_QC_10MS    = 0x1,  ///< 10ms VREF Quick Charge duration
+    TAA3040_VREF_QC_50MS    = 0x2,  ///< 50ms VREF Quick Charge duration
+    TAA3040_VREF_QC_100MS   = 0x3,  ///< 100ms VREF Quick Charge Duration
+} taa3040_vref_qc_t;
+
+/**
+ * @brief 
+ * 
+ */
+typedef enum {
+    TAA3040_INPUT_QC_2500US     = 0x0,  ///< 2.5ms Input Quick Charge Duration
+    TAA3040_INPUT_QC_12500US    = 0x1,  ///< 12.5ms Input Quick Charge Duration
+    TAA3040_INPUT_QC_25MS       = 0x2,  ///< 25ms Input Quick Charge Duration
+    TAA3040_INPUT_QC_50MS       = 0x3,  ///< 50ms Input Quick Charge Duration
+} taa3040_input_qc_t;
+
 /** Device context structure */
 typedef struct {
     const taa3040_i2c_write_t i2c_write;
@@ -125,6 +147,10 @@ typedef struct {
 } taa3040_hal_t;
 
 typedef struct {
+
+    bool avdd_is_3v3;
+    bool 
+    taa3040_vref_qc_t quick_charge_time;
 
 
 } taa3040_config_t;
