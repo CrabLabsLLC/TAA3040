@@ -1,489 +1,411 @@
 /**
  * @file taa3040_registers.h
- * @author your name (you@domain.com)
- * @brief 
- * @version 0.1
- * @date 2025-04-24
- * 
- * @copyright Copyright (c) 2025
- * 
+ * @brief Register addresses and bitfields for TAA3040 device.
  */
-
-#pragma once
 
 #ifndef TAA3040_REGISTERS_H
 #define TAA3040_REGISTERS_H
 
 #include <stdint.h>
 
+/* === Core Registers (Page 0) === */
+#define TAA3040_REG_PAGE_SELECT                     0x00 ///< Page selection register
+#define TAA3040_REG_SW_RESET                        0x01 ///< Software reset
+#define TAA3040_REG_SLEEP_CFG                       0x02 ///< Sleep configuration
+#define TAA3040_REG_SHUTDOWN_CFG                    0x05 ///< Shutdown configuration
 
-/**
- * @brief Page 0 Registers
- * 
- */
-typedef enum {
-    TAA3040_P0_PAGE_CFG         = 0x00, ///< Device page select (R/W) 
-    TAA3040_P0_SW_RESET         = 0x01, ///< Software reset (self-clearing)
-    TAA3040_P0_SLEEP_CFG        = 0x02, ///< Regulator, VREF, I2C broadcast, sleep 
-    // 0x03–0x04 reserved 
-    TAA3040_P0_SHDN_CFG         = 0x05, ///< Shutdown configuration 
-    // 0x06 reserved
-    TAA3040_P0_ASI_CFG0         = 0x07, ///< ASI format, word length, polarity
-    TAA3040_P0_ASI_CFG1         = 0x08, ///< ASI LSB, keeper, offset 
-    TAA3040_P0_ASI_CFG2         = 0x09, ///< ASI daisy, error detect, auto-resume 
-    // 0x0A reserved 
-    TAA3040_P0_ASI_CH1          = 0x0B, ///< ASI channel 1 slot/output 
-    TAA3040_P0_ASI_CH2          = 0x0C, ///< ASI channel 2 slot/output 
-    TAA3040_P0_ASI_CH3          = 0x0D, ///< ASI channel 3 slot/output 
-    TAA3040_P0_ASI_CH4          = 0x0E, ///< ASI channel 4 slot/output 
-    TAA3040_P0_ASI_CH5          = 0x0F, ///< ASI channel 5 slot/output 
-    TAA3040_P0_ASI_CH6          = 0x10, ///< ASI channel 6 slot/output 
-    TAA3040_P0_ASI_CH7          = 0x11, ///< ASI channel 7 slot/output 
-    TAA3040_P0_ASI_CH8          = 0x12, ///< ASI channel 8 slot/output 
-    TAA3040_P0_MST_CFG0         = 0x13, ///< Master/slave, auto clock, PLL disable 
-    TAA3040_P0_MST_CFG1         = 0x14, ///< FS_RATE and BCLK/FSYNC ratio 
-    TAA3040_P0_ASI_STS          = 0x15, ///< ASI clock monitor status 
-    TAA3040_P0_CLK_SRC          = 0x16, ///< Clock source config 
-    // 0x17–0x1E reserved 
-    TAA3040_P0_PDMCLK_CFG       = 0x1F, ///< PDM clock divider 
-    TAA3040_P0_PDMIN_CFG        = 0x20, ///< PDM DIN edge config 
-    TAA3040_P0_GPIO_CFG0        = 0x21, ///< GPIO1 config and drive 
-    TAA3040_P0_GPO_CFG0         = 0x22, ///< GPO1 config and drive 
-    TAA3040_P0_GPO_CFG1         = 0x23, ///< GPO2 config and drive 
-    TAA3040_P0_GPO_CFG2         = 0x24, ///< GPO3 config and drive 
-    TAA3040_P0_GPO_CFG3         = 0x25, ///< GPO4 config and drive
-    // 0x26–0x28 reserved 
-    TAA3040_P0_GPO_VAL          = 0x29, ///< GPIO/GPO output values 
-    TAA3040_P0_GPIO_MON         = 0x2A, ///< GPIO input monitor 
-    TAA3040_P0_GPI_CFG0         = 0x2B, ///< GPI1/2 config 
-    TAA3040_P0_GPI_CFG1         = 0x2C, ///< GPI3/4 config
-    // 0x2D–0x2E reserved 
-    TAA3040_P0_GPI_MON          = 0x2F, ///< GPI1–4 input monitor 
-    // 0x30–0x31 reserved 
-    TAA3040_P0_INT_CFG          = 0x32, ///< Interrupt config 
-    // 0x33 INT_MASK0 
-    TAA3040_P0_INT_MASK0        = 0x33, ///< Interrupt mask 0 
-    // 0x34–0x35 reserved 
-    TAA3040_P0_INT_LTCH0        = 0x36, ///< Latched interrupt status /
-    // 0x37–0x3A reserved 
-    TAA3040_P0_BIAS_CFG         = 0x3B, ///< Bias and ADC config 
-    TAA3040_P0_CH1_CFG0         = 0x3C, ///< Channel1 input config 
-    TAA3040_P0_CH1_CFG1         = 0x3D, ///< Channel1 volume/gain 
-    TAA3040_P0_CH1_CFG2         = 0x3E, ///< Channel1 phase cal 
-    TAA3040_P0_CH1_CFG3         = 0x3F, ///< Channel1 IIR select 
-    TAA3040_P0_CH1_CFG4         = 0x40, ///< Channel1 decimation 
-    TAA3040_P0_CH2_CFG0         = 0x41, ///< Channel2 input config 
-    TAA3040_P0_CH2_CFG1         = 0x42, ///< Channel2 volume/gain 
-    TAA3040_P0_CH2_CFG2         = 0x43, ///< Channel2 phase cal 
-    TAA3040_P0_CH2_CFG3         = 0x44, ///< Channel2 IIR select 
-    TAA3040_P0_CH2_CFG4         = 0x45, ///< Channel2 decimation 
-    TAA3040_P0_CH3_CFG0         = 0x46, ///< Channel3 input config 
-    TAA3040_P0_CH3_CFG1         = 0x47, ///< Channel3 volume/gain 
-    TAA3040_P0_CH3_CFG2         = 0x48, ///< Channel3 phase cal 
-    TAA3040_P0_CH3_CFG3         = 0x49, ///< Channel3 IIR select 
-    TAA3040_P0_CH3_CFG4         = 0x4A, ///< Channel3 decimation 
-    TAA3040_P0_CH4_CFG0         = 0x4B, ///< Channel4 input config 
-    TAA3040_P0_CH4_CFG1         = 0x4C, ///< Channel4 volume/gain 
-    TAA3040_P0_CH4_CFG2         = 0x4D, ///< Channel4 phase cal 
-    TAA3040_P0_CH4_CFG3         = 0x4E, ///< Channel4 IIR select 
-    TAA3040_P0_CH4_CFG4         = 0x4F, ///< Channel4 decimation 
-    // 0x50–0x51 reserved 
-    TAA3040_P0_CH5_CFG2         = 0x52, ///< Channel5 PDM config 
-    TAA3040_P0_CH5_CFG3         = 0x53, ///< Channel5 PDM gain 
-    TAA3040_P0_CH5_CFG4         = 0x54, ///< Channel5 decimation 
-    // 0x55–0x56 reserved */
-    TAA3040_P0_CH6_CFG2         = 0x57, ///< Channel6 PDM config 
-    TAA3040_P0_CH6_CFG3         = 0x58, ///< Channel6 PDM gain 
-    TAA3040_P0_CH6_CFG4         = 0x59, ///< Channel6 decimation 
-    // 0x5A reserved 
-    TAA3040_P0_CH7_CFG2         = 0x5C, ///< Channel7 PDM config 
-    TAA3040_P0_CH7_CFG3         = 0x5D, ///< Channel7 PDM gain 
-    TAA3040_P0_CH7_CFG4         = 0x5E, ///< Channel7 decimation
-    // 0x5B reserved
-    TAA3040_P0_CH8_CFG2         = 0x61, ///< Channel8 PDM config 
-    TAA3040_P0_CH8_CFG3         = 0x62, ///< Channel8 PDM gain 
-    TAA3040_P0_CH8_CFG4         = 0x63, ///< Channel8 decimation 
-    // 0x60 reserved 
-    TAA3040_P0_DSP_CFG0         = 0x6B, ///< DSP processing config 
-    TAA3040_P0_DSP_CFG1         = 0x6C, ///< DSP additional settings 
-    // 0x6D–0x6F reserved 
-    TAA3040_P0_AGC_CFG0         = 0x70, ///< AGC config 
-    // 0x71–0x72 reserved 
-    TAA3040_P0_IN_CH_EN         = 0x73, ///< Input channel enable 
-    TAA3040_P0_ASI_OUT_CH_EN    = 0x74, ///< ASI output channel enable 
-    TAA3040_P0_PWR_CFG          = 0x75, //< Power-up config 
-    TAA3040_P0_DEV_STS0         = 0x76, ///< Channel power status 
-    TAA3040_P0_DEV_STS1         = 0x77, ///< Device mode status 
-    // 0x78–0x7D reserved
-    TAA3040_P0_I2C_CKSUM        = 0x7E  ///< I2C checksum register 
-} taa3040_page0_reg_t;
-    
+#define TAA3040_REG_DEV_STS0                        0x03 ///< Device status
 
-/**
- * @brief Page 2 Registers
- * 
- */
-typedef enum {
-    TAA3040_P2_PAGE_CFG        = 0x00,
-    // Biquad 1 
-    TAA3040_P2_BQ1_N0_BYT1     = 0x08,
-    TAA3040_P2_BQ1_N0_BYT2     = 0x09,
-    TAA3040_P2_BQ1_N0_BYT3     = 0x0A,
-    TAA3040_P2_BQ1_N0_BYT4     = 0x0B,
-    TAA3040_P2_BQ1_N1_BYT1     = 0x0C,
-    TAA3040_P2_BQ1_N1_BYT2     = 0x0D,
-    TAA3040_P2_BQ1_N1_BYT3     = 0x0E,
-    TAA3040_P2_BQ1_N1_BYT4     = 0x0F,
-    TAA3040_P2_BQ1_N2_BYT1     = 0x10,
-    TAA3040_P2_BQ1_N2_BYT2     = 0x11,
-    TAA3040_P2_BQ1_N2_BYT3     = 0x12,
-    TAA3040_P2_BQ1_N2_BYT4     = 0x13,
-    TAA3040_P2_BQ1_D1_BYT1     = 0x14,
-    TAA3040_P2_BQ1_D1_BYT2     = 0x15,
-    TAA3040_P2_BQ1_D1_BYT3     = 0x16,
-    TAA3040_P2_BQ1_D1_BYT4     = 0x17,
-    TAA3040_P2_BQ1_D2_BYT1     = 0x18,
-    TAA3040_P2_BQ1_D2_BYT2     = 0x19,
-    TAA3040_P2_BQ1_D2_BYT3     = 0x1A,
-    TAA3040_P2_BQ1_D2_BYT4     = 0x1B,
-    // Biquad 2 /
-    TAA3040_P2_BQ2_N0_BYT1     = 0x1C,
-    TAA3040_P2_BQ2_N0_BYT2     = 0x1D,
-    TAA3040_P2_BQ2_N0_BYT3     = 0x1E,
-    TAA3040_P2_BQ2_N0_BYT4     = 0x1F,
-    TAA3040_P2_BQ2_N1_BYT1     = 0x20,
-    TAA3040_P2_BQ2_N1_BYT2     = 0x21,
-    TAA3040_P2_BQ2_N1_BYT3     = 0x22,
-    TAA3040_P2_BQ2_N1_BYT4     = 0x23,
-    TAA3040_P2_BQ2_N2_BYT1     = 0x24,
-    TAA3040_P2_BQ2_N2_BYT2     = 0x25,
-    TAA3040_P2_BQ2_N2_BYT3     = 0x26,
-    TAA3040_P2_BQ2_N2_BYT4     = 0x27,
-    TAA3040_P2_BQ2_D1_BYT1     = 0x28,
-    TAA3040_P2_BQ2_D1_BYT2     = 0x29,
-    TAA3040_P2_BQ2_D1_BYT3     = 0x2A,
-    TAA3040_P2_BQ2_D1_BYT4     = 0x2B,
-    TAA3040_P2_BQ2_D2_BYT1     = 0x2C,
-    TAA3040_P2_BQ2_D2_BYT2     = 0x2D,
-    TAA3040_P2_BQ2_D2_BYT3     = 0x2E,
-    TAA3040_P2_BQ2_D2_BYT4     = 0x2F,
-    // Biquad 3 /
-    TAA3040_P2_BQ3_N0_BYT1     = 0x30,
-    TAA3040_P2_BQ3_N0_BYT2     = 0x31,
-    TAA3040_P2_BQ3_N0_BYT3     = 0x32,
-    TAA3040_P2_BQ3_N0_BYT4     = 0x33,
-    TAA3040_P2_BQ3_N1_BYT1     = 0x34,
-    TAA3040_P2_BQ3_N1_BYT2     = 0x35,
-    TAA3040_P2_BQ3_N1_BYT3     = 0x36,
-    TAA3040_P2_BQ3_N1_BYT4     = 0x37,
-    TAA3040_P2_BQ3_N2_BYT1     = 0x38,
-    TAA3040_P2_BQ3_N2_BYT2     = 0x39,
-    TAA3040_P2_BQ3_N2_BYT3     = 0x3A,
-    TAA3040_P2_BQ3_N2_BYT4     = 0x3B,
-    TAA3040_P2_BQ3_D1_BYT1     = 0x3C,
-    TAA3040_P2_BQ3_D1_BYT2     = 0x3D,
-    TAA3040_P2_BQ3_D1_BYT3     = 0x3E,
-    TAA3040_P2_BQ3_D1_BYT4     = 0x3F,
-    TAA3040_P2_BQ3_D2_BYT1     = 0x40,
-    TAA3040_P2_BQ3_D2_BYT2     = 0x41,
-    TAA3040_P2_BQ3_D2_BYT3     = 0x42,
-    TAA3040_P2_BQ3_D2_BYT4     = 0x43,
-    // Biquad 4 /
-    TAA3040_P2_BQ4_N0_BYT1     = 0x44,
-    TAA3040_P2_BQ4_N0_BYT2     = 0x45,
-    TAA3040_P2_BQ4_N0_BYT3     = 0x46,
-    TAA3040_P2_BQ4_N0_BYT4     = 0x47,
-    TAA3040_P2_BQ4_N1_BYT1     = 0x48,
-    TAA3040_P2_BQ4_N1_BYT2     = 0x49,
-    TAA3040_P2_BQ4_N1_BYT3     = 0x4A,
-    TAA3040_P2_BQ4_N1_BYT4     = 0x4B,
-    TAA3040_P2_BQ4_N2_BYT1     = 0x4C,
-    TAA3040_P2_BQ4_N2_BYT2     = 0x4D,
-    TAA3040_P2_BQ4_N2_BYT3     = 0x4E,
-    TAA3040_P2_BQ4_N2_BYT4     = 0x4F,
-    TAA3040_P2_BQ4_D1_BYT1     = 0x50,
-    TAA3040_P2_BQ4_D1_BYT2     = 0x51,
-    TAA3040_P2_BQ4_D1_BYT3     = 0x52,
-    TAA3040_P2_BQ4_D1_BYT4     = 0x53,
-    TAA3040_P2_BQ4_D2_BYT1     = 0x54,
-    TAA3040_P2_BQ4_D2_BYT2     = 0x55,
-    TAA3040_P2_BQ4_D2_BYT3     = 0x56,
-    TAA3040_P2_BQ4_D2_BYT4     = 0x57,
-    // Biquad 5 /
-    TAA3040_P2_BQ5_N0_BYT1     = 0x58,
-    TAA3040_P2_BQ5_N0_BYT2     = 0x59,
-    TAA3040_P2_BQ5_N0_BYT3     = 0x5A,
-    TAA3040_P2_BQ5_N0_BYT4     = 0x5B,
-    TAA3040_P2_BQ5_N1_BYT1     = 0x5C,
-    TAA3040_P2_BQ5_N1_BYT2     = 0x5D,
-    TAA3040_P2_BQ5_N1_BYT3     = 0x5E,
-    TAA3040_P2_BQ5_N1_BYT4     = 0x5F,
-    TAA3040_P2_BQ5_N2_BYT1     = 0x60,
-    TAA3040_P2_BQ5_N2_BYT2     = 0x61,
-    TAA3040_P2_BQ5_N2_BYT3     = 0x62,
-    TAA3040_P2_BQ5_N2_BYT4     = 0x63,
-    TAA3040_P2_BQ5_D1_BYT1     = 0x64,
-    TAA3040_P2_BQ5_D1_BYT2     = 0x65,
-    TAA3040_P2_BQ5_D1_BYT3     = 0x66,
-    TAA3040_P2_BQ5_D1_BYT4     = 0x67,
-    TAA3040_P2_BQ5_D2_BYT1     = 0x68,
-    TAA3040_P2_BQ5_D2_BYT2     = 0x69,
-    TAA3040_P2_BQ5_D2_BYT3     = 0x6A,
-    TAA3040_P2_BQ5_D2_BYT4     = 0x6B,
-    // Biquad 6 */
-    TAA3040_P2_BQ6_N0_BYT1     = 0x6C,
-    TAA3040_P2_BQ6_N0_BYT2     = 0x6D,
-    TAA3040_P2_BQ6_N0_BYT3     = 0x6E,
-    TAA3040_P2_BQ6_N0_BYT4     = 0x6F,
-    TAA3040_P2_BQ6_N1_BYT1     = 0x70,
-    TAA3040_P2_BQ6_N1_BYT2     = 0x71,
-    TAA3040_P2_BQ6_N1_BYT3     = 0x72,
-    TAA3040_P2_BQ6_N1_BYT4     = 0x73,
-    TAA3040_P2_BQ6_N2_BYT1     = 0x74,
-    TAA3040_P2_BQ6_N2_BYT2     = 0x75,
-    TAA3040_P2_BQ6_N2_BYT3     = 0x76,
-    TAA3040_P2_BQ6_N2_BYT4     = 0x77,
-    TAA3040_P2_BQ6_D1_BYT1     = 0x78,
-    TAA3040_P2_BQ6_D1_BYT2     = 0x79,
-    TAA3040_P2_BQ6_D1_BYT3     = 0x7A,
-    TAA3040_P2_BQ6_D1_BYT4     = 0x7B,
-    TAA3040_P2_BQ6_D2_BYT1     = 0x7C,
-    TAA3040_P2_BQ6_D2_BYT2     = 0x7D,
-    TAA3040_P2_BQ6_D2_BYT3     = 0x7E,
-    TAA3040_P2_BQ6_D2_BYT4     = 0x7F
-} taa3040_page2_reg_t;
-    
+/* === ASI Interface Registers (Page 0) === */
+#define TAA3040_REG_ASI_CONFIG0                     0x07 ///< ASI/I2S/TDM basic configuration
+#define TAA3040_REG_ASI_CONFIG1                     0x08
+#define TAA3040_REG_ASI_CONFIG2                     0x09
 
-/**
- * @brief Registers in Page 3
- * 
- */
-typedef enum {
-    TAA3040_P3_PAGE_CFG        = 0x00,
-    // Biquad 7 /
-    TAA3040_P3_BQ7_N0_BYT1     = 0x08,
-    TAA3040_P3_BQ7_N0_BYT2     = 0x09,
-    TAA3040_P3_BQ7_N0_BYT3     = 0x0A,
-    TAA3040_P3_BQ7_N0_BYT4     = 0x0B,
-    TAA3040_P3_BQ7_N1_BYT1     = 0x0C,
-    TAA3040_P3_BQ7_N1_BYT2     = 0x0D,
-    TAA3040_P3_BQ7_N1_BYT3     = 0x0E,
-    TAA3040_P3_BQ7_N1_BYT4     = 0x0F,
-    TAA3040_P3_BQ7_N2_BYT1     = 0x10,
-    TAA3040_P3_BQ7_N2_BYT2     = 0x11,
-    TAA3040_P3_BQ7_N2_BYT3     = 0x12,
-    TAA3040_P3_BQ7_N2_BYT4     = 0x13,
-    TAA3040_P3_BQ7_D1_BYT1     = 0x14,
-    TAA3040_P3_BQ7_D1_BYT2     = 0x15,
-    TAA3040_P3_BQ7_D1_BYT3     = 0x16,
-    TAA3040_P3_BQ7_D1_BYT4     = 0x17,
-    TAA3040_P3_BQ7_D2_BYT1     = 0x18,
-    TAA3040_P3_BQ7_D2_BYT2     = 0x19,
-    TAA3040_P3_BQ7_D2_BYT3     = 0x1A,
-    TAA3040_P3_BQ7_D2_BYT4     = 0x1B,
-    // Biquad 8 /
-    TAA3040_P3_BQ8_N0_BYT1     = 0x1C,
-    TAA3040_P3_BQ8_N0_BYT2     = 0x1D,
-    TAA3040_P3_BQ8_N0_BYT3     = 0x1E,
-    TAA3040_P3_BQ8_N0_BYT4     = 0x1F,
-    TAA3040_P3_BQ8_N1_BYT1     = 0x20,
-    TAA3040_P3_BQ8_N1_BYT2     = 0x21,
-    TAA3040_P3_BQ8_N1_BYT3     = 0x22,
-    TAA3040_P3_BQ8_N1_BYT4     = 0x23,
-    TAA3040_P3_BQ8_N2_BYT1     = 0x24,
-    TAA3040_P3_BQ8_N2_BYT2     = 0x25,
-    TAA3040_P3_BQ8_N2_BYT3     = 0x26,
-    TAA3040_P3_BQ8_N2_BYT4     = 0x27,
-    TAA3040_P3_BQ8_D1_BYT1     = 0x28,
-    TAA3040_P3_BQ8_D1_BYT2     = 0x29,
-    TAA3040_P3_BQ8_D1_BYT3     = 0x2A,
-    TAA3040_P3_BQ8_D1_BYT4     = 0x2B,
-    TAA3040_P3_BQ8_D2_BYT1     = 0x2C,
-    TAA3040_P3_BQ8_D2_BYT2     = 0x2D,
-    TAA3040_P3_BQ8_D2_BYT3     = 0x2E,
-    TAA3040_P3_BQ8_D2_BYT4     = 0x2F,
-    // Biquad 9 /
-    TAA3040_P3_BQ9_N0_BYT1     = 0x30,
-    TAA3040_P3_BQ9_N0_BYT2     = 0x31,
-    TAA3040_P3_BQ9_N0_BYT3     = 0x32,
-    TAA3040_P3_BQ9_N0_BYT4     = 0x33,
-    TAA3040_P3_BQ9_N1_BYT1     = 0x34,
-    TAA3040_P3_BQ9_N1_BYT2     = 0x35,
-    TAA3040_P3_BQ9_N1_BYT3     = 0x36,
-    TAA3040_P3_BQ9_N1_BYT4     = 0x37,
-    TAA3040_P3_BQ9_N2_BYT1     = 0x38,
-    TAA3040_P3_BQ9_N2_BYT2     = 0x39,
-    TAA3040_P3_BQ9_N2_BYT3     = 0x3A,
-    TAA3040_P3_BQ9_N2_BYT4     = 0x3B,
-    TAA3040_P3_BQ9_D1_BYT1     = 0x3C,
-    TAA3040_P3_BQ9_D1_BYT2     = 0x3D,
-    TAA3040_P3_BQ9_D1_BYT3     = 0x3E,
-    TAA3040_P3_BQ9_D1_BYT4     = 0x3F,
-    TAA3040_P3_BQ9_D2_BYT1     = 0x40,
-    TAA3040_P3_BQ9_D2_BYT2     = 0x41,
-    TAA3040_P3_BQ9_D2_BYT3     = 0x42,
-    TAA3040_P3_BQ9_D2_BYT4     = 0x43,
-    // Biquad 10 /
-    TAA3040_P3_BQ10_N0_BYT1    = 0x44,
-    TAA3040_P3_BQ10_N0_BYT2    = 0x45,
-    TAA3040_P3_BQ10_N0_BYT3    = 0x46,
-    TAA3040_P3_BQ10_N0_BYT4    = 0x47,
-    TAA3040_P3_BQ10_N1_BYT1    = 0x48,
-    TAA3040_P3_BQ10_N1_BYT2    = 0x49,
-    TAA3040_P3_BQ10_N1_BYT3    = 0x4A,
-    TAA3040_P3_BQ10_N1_BYT4    = 0x4B,
-    TAA3040_P3_BQ10_N2_BYT1    = 0x4C,
-    TAA3040_P3_BQ10_N2_BYT2    = 0x4D,
-    TAA3040_P3_BQ10_N2_BYT3    = 0x4E,
-    TAA3040_P3_BQ10_N2_BYT4    = 0x4F,
-    TAA3040_P3_BQ10_D1_BYT1    = 0x50,
-    TAA3040_P3_BQ10_D1_BYT2    = 0x51,
-    TAA3040_P3_BQ10_D1_Byt3    = 0x52,
-    TAA3040_P3_BQ10_D1_Byt4    = 0x53,
-    TAA3040_P3_BQ10_D2_BYT1    = 0x54,
-    TAA3040_P3_BQ10_D2_BYT2    = 0x55,
-    TAA3040_P3_BQ10_D2_BYT3    = 0x56,
-    TAA3040_P3_BQ10_D2_BYT4    = 0x57,
-    // Biquad 11 /
-    TAA3040_P3_BQ11_N0_BYT1    = 0x58,
-    TAA3040_P3_BQ11_N0_BYT2    = 0x59,
-    TAA3040_P3_BQ11_N0_BYT3    = 0x5A,
-    TAA3040_P3_BQ11_N0_BYT4    = 0x5B,
-    TAA3040_P3_BQ11_N1_BYT1    = 0x5C,
-    TAA3040_P3_BQ11_N1_BYT2    = 0x5D,
-    TAA3040_P3_BQ11_N1_BYT3    = 0x5E,
-    TAA3040_P3_BQ11_N1_BYT4    = 0x5F,
-    TAA3040_P3_BQ11_N2_BYT1    = 0x60,
-    TAA3040_P3_BQ11_N2_BYT2    = 0x61,
-    TAA3040_P3_BQ11_N2_BYT3    = 0x62,
-    TAA3040_P3_BQ11_N2_BYT4    = 0x63,
-    TAA3040_P3_BQ11_D1_BYT1    = 0x64,
-    TAA3040_P3_BQ11_D1_BYT2    = 0x65,
-    TAA3040_P3_BQ11_D1_BYT3    = 0x66,
-    TAA3040_P3_BQ11_D1_BYT4    = 0x67,
-    TAA3040_P3_BQ11_D2_BYT1    = 0x68,
-    TAA3040_P3_BQ11_D2_BYT2    = 0x69,
-    TAA3040_P3_BQ11_D2_BYT3    = 0x6A,
-    TAA3040_P3_BQ11_D2_BYT4    = 0x6B,
-    // Biquad 12 
-    TAA3040_P3_BQ12_N0_BYT1    = 0x6C,
-    TAA3040_P3_BQ12_N0_BYT2    = 0x6D,
-    TAA3040_P3_BQ12_N0_BYT3    = 0x6E,
-    TAA3040_P3_BQ12_N0_BYT4    = 0x6F,
-    TAA3040_P3_BQ12_N1_BYT1    = 0x70,
-    TAA3040_P3_BQ12_N1_BYT2    = 0x71,
-    TAA3040_P3_BQ12_N1_BYT3    = 0x72,
-    TAA3040_P3_BQ12_N1_BYT4    = 0x73,
-    TAA3040_P3_BQ12_N2_BYT1    = 0x74,
-    TAA3040_P3_BQ12_N2_BYT2    = 0x75,
-    TAA3040_P3_BQ12_N2_BYT3    = 0x76,
-    TAA3040_P3_BQ12_N2_BYT4    = 0x77,
-    TAA3040_P3_BQ12_D1_BYT1    = 0x78,
-    TAA3040_P3_BQ12_D1_BYT2    = 0x79,
-    TAA3040_P3_BQ12_D1_BYT3    = 0x7A,
-    TAA3040_P3_BQ12_D1_BYT4    = 0x7B,
-    TAA3040_P3_BQ12_D2_BYT1    = 0x7C,
-    TAA3040_P3_BQ12_D2_BYT2    = 0x7D,
-    TAA3040_P3_BQ12_D2_BYT3    = 0x7E,
-    TAA3040_P3_BQ12_D2_BYT4    = 0x7F
-} taa3040_page3_reg_t;
-    
+#define TAA3040_REG_ASI_CHANNEL_BASE                0x0B ///< Per channel config, mirrored 
 
-typedef enum {
-    TAA3040_P4_PAGE_CFG        = 0x00,
-    // Mixer 1 coefficients /
-    TAA3040_P4_MIX1_CH1_BYT1   = 0x08,
-    TAA3040_P4_MIX1_CH1_BYT2   = 0x09,
-    TAA3040_P4_MIX1_CH1_BYT3   = 0x0A,
-    TAA3040_P4_MIX1_CH1_BYT4   = 0x0B,
-    TAA3040_P4_MIX1_CH2_BYT1   = 0x0C,
-    TAA3040_P4_MIX1_CH2_BYT2   = 0x0D,
-    TAA3040_P4_MIX1_CH2_BYT3   = 0x0E,
-    TAA3040_P4_MIX1_CH2_BYT4   = 0x0F,
-    TAA3040_P4_MIX1_CH3_BYT1   = 0x10,
-    TAA3040_P4_MIX1_CH3_BYT2   = 0x11,
-    TAA3040_P4_MIX1_CH3_BYT3   = 0x12,
-    TAA3040_P4_MIX1_CH3_BYT4   = 0x13,
-    TAA3040_P4_MIX1_CH4_BYT1   = 0x14,
-    TAA3040_P4_MIX1_CH4_BYT2   = 0x15,
-    TAA3040_P4_MIX1_CH4_BYT3   = 0x16,
-    TAA3040_P4_MIX1_CH4_BYT4   = 0x17,
-    // Mixer 2 /
-    TAA3040_P4_MIX2_CH1_BYT1   = 0x18,
-    TAA3040_P4_MIX2_CH1_BYT2   = 0x19,
-    TAA3040_P4_MIX2_CH1_BYT3   = 0x1A,
-    TAA3040_P4_MIX2_CH1_BYT4   = 0x1B,
-    TAA3040_P4_MIX2_CH2_BYT1   = 0x1C,
-    TAA3040_P4_MIX2_CH2_BYT2   = 0x1D,
-    TAA3040_P4_MIX2_CH2_BYT3   = 0x1E,
-    TAA3040_P4_MIX2_CH2_BYT4   = 0x1F,
-    TAA3040_P4_MIX2_CH3_BYT1   = 0x20,
-    TAA3040_P4_MIX2_CH3_BYT2   = 0x21,
-    TAA3040_P4_MIX2_CH3_BYT3   = 0x22,
-    TAA3040_P4_MIX2_CH3_BYT4   = 0x23,
-    TAA3040_P4_MIX2_CH4_BYT1   = 0x24,
-    TAA3040_P4_MIX2_CH4_BYT2   = 0x25,
-    TAA3040_P4_MIX2_CH4_BYT3   = 0x26,
-    TAA3040_P4_MIX2_CH4_BYT4   = 0x27,
-    // Mixer 3 /
-    TAA3040_P4_MIX3_CH1_BYT1   = 0x28,
-    TAA3040_P4_MIX3_CH1_BYT2   = 0x29,
-    TAA3040_P4_MIX3_CH1_BYT3   = 0x2A,
-    TAA3040_P4_MIX3_CH1_BYT4   = 0x2B,
-    TAA3040_P4_MIX3_CH2_BYT1   = 0x2C,
-    TAA3040_P4_MIX3_CH2_BYT2   = 0x2D,
-    TAA3040_P4_MIX3_CH2_BYT3   = 0x2E,
-    TAA3040_P4_MIX3_CH2_BYT4   = 0x2F,
-    TAA3040_P4_MIX3_CH3_BYT1   = 0x30,
-    TAA3040_P4_MIX3_CH3_BYT2   = 0x31,
-    TAA3040_P4_MIX3_CH3_BYT3   = 0x32,
-    TAA3040_P4_MIX3_CH3_BYT4   = 0x33,
-    TAA3040_P4_MIX3_CH4_BYT1   = 0x34,
-    TAA3040_P4_MIX3_CH4_BYT2   = 0x35,
-    TAA3040_P4_MIX3_CH4_BYT3   = 0x36,
-    TAA3040_P4_MIX3_CH4_BYT4   = 0x37,
-    // Mixer 4 fills from 0x38 /
-    TAA3040_P4_MIX4_CH1_BYT1   = 0x38,
-    TAA3040_P4_MIX4_CH1_BYT2   = 0x39,
-    TAA3040_P4_MIX4_CH1_BYT3   = 0x3A,
-    TAA3040_P4_MIX4_CH1_BYT4   = 0x3B,
-    TAA3040_P4_MIX4_CH2_BYT1   = 0x3C,
-    TAA3040_P4_MIX4_CH2_BYT2   = 0x3D,
-    TAA3040_P4_MIX4_CH2_BYT3   = 0x3E,
-    TAA3040_P4_MIX4_CH2_BYT4   = 0x3F,
-    TAA3040_P4_MIX4_CH3_BYT1   = 0x40,
-    TAA3040_P4_MIX4_CH3_BYT2   = 0x41,
-    TAA3040_P4_MIX4_CH3_BYT3   = 0x42,
-    TAA3040_P4_MIX4_CH3_BYT4   = 0x43,
-    TAA3040_P4_MIX4_CH4_BYT1   = 0x44,
-    TAA3040_P4_MIX4_CH4_BYT2   = 0x45,
-    TAA3040_P4_MIX4_CH4_BYT3   = 0x46,
-    TAA3040_P4_MIX4_CH4_BYT4   = 0x47, 
-    // First-order IIR
-    TAA3040_P4_IIR_N0_BYT1     = 0x48,
-    TAA3040_P4_IIR_N0_BYT2     = 0x49,
-    TAA3040_P4_IIR_N0_BYT3     = 0x4A,
-    TAA3040_P4_IIR_N0_BYT4     = 0x4B,
-    TAA3040_P4_IIR_N1_BYT1     = 0x4C,
-    TAA3040_P4_IIR_N1_BYT2     = 0x4D,
-    TAA3040_P4_IIR_N1_BYT3     = 0x4E,
-    TAA3040_P4_IIR_N1_BYT4     = 0x4F,
-    TAA3040_P4_IIR_D1_BYT1     = 0x50,
-    TAA3040_P4_IIR_D1_BYT2     = 0x51,
-    TAA3040_P4_IIR_D1_BYT3     = 0x52,
-    TAA3040_P4_IIR_D1_BYT4     = 0x53
-} taa3040_page4_reg_t;
+/* === Master Config Registers (Page 0)* === */
+#define TAA3040_REG_MASTER_CONFIG0                  0x13
+#define TAA3040_REG_MASTER_CONFIG1                  0x14
 
-typedef struct {
-    
-    uint8_t page: 2;
-    union {
-        taa3040_page0_reg_t page0;
-        taa3040_page2_reg_t page2;
-        taa3040_page3_reg_t page3;
-        taa3040_page4_reg_t page4;
-    };
+/* === ASI Status Register (Page 0) === */
+#define TAA3040_REG_ASI_STATUS                      0x15
 
-} taa3040_reg_t;
-    
-#endif /* TAA3040_REGS_H */
+/* === Clock Configuration (Page 0) === */
+#define TAA3040_REG_CLOCK_SOURCE                    0x16
+
+/* === PDM Configuration  (Page 0) === */
+#define TAA3040_REG_PDMCLK_CONFIG                   0x1F
+#define TAA3040_REG_PDMIN_CONFIG                    0x20
+
+/* === GPIO and Interrupt Registers (Page 0) === */
+#define TAA3040_REG_GPIO1_CONFIG                    0x21
+#define TAA3040_REG_GPO_CONFIG_BASE                 0x22  ///< GPO configuration start
+#define TAA3040_REG_GPO_VALUE                       0x29  ///< Output states of GPO
+#define TAA3040_REG_GPIO1_MONITOR                   0x2A  ///< Reads values at GPI Pin
+#define TAA3040_REG_GPI_CONFIG_BASE                 0x2B  ///< GPI configuration start
+#define TAA3040_REG_GPI_MONITOR                     0x2F  ///< Reads GPI Pins
+
+#define TAA3040_REG_INTERRUPT_CONFIG                0x32  ///< Interrupt config
+#define TAA3040_REG_INTERRUPT_MASK                  0x33  ///< Which events trigger interrupts
+#define TAA3040_REG_INTERRUPT_LATCH                 0x34  ///< Details which interrupts occurred
+
+/* === Bias Configuration (Page 0) === */
+#define TAA3040_REG_BIAS_CONFIG                     0x3B
+
+/* === Channel Specific Registers (Page 0) === */
+#define TAA3040_REG_CHANNEL_CONFIG_BASE             0x3C ///< AGC enable
+#define TAA3040_REG_CHANNEL_GAIN_BASE               0x3D /// Gain
+#define TAA3040_REG_CHANNEL_VOLUME_BASE             0x3E ///< Digital volume control
+#define TAA3040_REG_CHANNEL_GAIN_CAL_BASE           0x3F    
+#define TAA3040_REG_CHANNEL_PHASE_CAL_BASE          0x40
+
+#define TAA3040_CHANNEL_REGISTER_ENTRIES            5
+
+/* === DSP Configuration (Page 0) === */
+#define TAA3040_REG_DSP_CONFIG0                     0x6B  ///< Filtering 
+#define TAA3040_REG_DSP_CONFIG1                     0x6C
+
+/* === Channel Enable (Page 0) === */
+#define TAA3040_REG_IN_CHANNEL_EN                   0x73  ///< Input channel enabling 
+#define TAA3040_REG_ASI_OUT_CHANNEL_EN              0x74  ///< ASI channel out enabling
+
+/* === Power Configuration (Page 0) === */
+#define TAA3040_REG_POWER_CONFIG                    0x75
+
+/* === Status Registers (Page 0) === */
+#define TAA3040_REG_STATUS0                         0x76
+#define TAA3040_REG_STATUS1                         0x77
+
+/** === I2C Checksum (Page 0) === */
+#define TAA3040_REG_I2C_CHECKSUM                    0x7E
+
+/* === Page 2: Biquad Filter Set 1 === */
+#define TAA3040_PAGE_BIQUAD_FILTER_1                0x02
+#define TAA3040_REG_BIQUAD_COEFF_BASE               0x00
+
+/* === Page 3: Biquad Filter Set 2 === */
+#define TAA3040_PAGE_BIQUAD_FILTER_2                0x03
+
+#define TAA3040_BIQUAD_COEFF_WORDS_PER_SECTION      (5) ///< b0, b1, b2, a1, a2
+#define TAA3040_BIQUAD_CHANNEL_STRIDE               (5)
+
+/* === Page 4: Mixer Matrix === */
+#define TAA3040_PAGE_MIXER_CONTROL                  0x04
+#define TAA3040_REG_MIXER_MATRIX_BASE               0x00
+
+/* === Mixer Matrix Helper Constants === */
+#define TAA3040_MIXER_MATRIX_ENTRIES_PER_CHANNEL    (8)
+#define TAA3040_MIXER_COEFF_WORDS_PER_ENTRY         (1)
+#define TAA3040_MIXER_CHANNEL_STRIDE                (8)
+
+/* === Page 4: First Order IIR Filter === */
+#define TAA3040_PAGE_IIR_COEFF                      0x04
+#define TAA3040_REG_IIR_COEFF_START                 0x48
+#define TAA3040_REG_IIR_N0                          0x48 ///< n0 coefficient
+#define TAA3040_REG_IIR_N1                          0x4C ///< n1 coefficient
+#define TAA3040_REG_IIR_D1                          0x50 ///< d1 coefficient
+
+#define TAA3040_IIR_COEFF_WORDS_PER_SECTION         (3)
+
+/* === Bit Masks and Field Definitions === */
+
+/* --- SW_RESET (0x01) --- */
+#define TAA3040_SW_RESET_MASK                       (0x01)
+
+/* --- Sleep Config (0x02) --- */
+#define TAA3040_SLEEP_ENABLE_SHIFT                  (0x0)
+#define TAA3040_SLEEP_ENABLE_MASK                   (0x01 << TAA3040_SLEEP_ENABLE_SHIFT)
+#define TAA3040_I2C_BROADCAST_SHIFT                 (0x2)
+#define TAA3040_I2C_BROADCAST_MASK                  (0x01 << TAA3040_SLEEP_ENABLE_SHIFT)
+#define TAA3040_VREF_QCHRG_SHIFT                    (0x3)
+#define TAA3040_VREF_QCHRG_MASK                     (0x3 << TAA3040_VREF_QCHRG_SHIFT)
+#define TAA3040_AREG_SELECT_SHIFT                   (0x7)
+#define TAA3040_AREG_SELECT_MASK                    (0x01 << TAA3040_AREG_SELECT_SHIFT)
+
+/* -- Shutdown Config (0x05) --- */
+#define TAA3040_DREG_KA_TIME_SHIFT                  (0)
+#define TAA3040_DREG_KA_TIME_MASK                   (0x3 << TAA3040_DREG_KA_TIME_SHIFT)
+#define TAA3040_SHDNZ_CFG_SHIFT                     (2)
+#define TAA3040_SHDNZ_CFG_MASK                      (0x3 << TAA3040_SHDNZ_CFG_SHIFT)
+#define TAA3040_INCAP_QCHG_SHIFT                    (4)
+#define TAA3040_INCAP_QCHG_MASK                     (0x3 << TAA3040_INCAP_QCHG_SHIFT)
+
+/* --- ASI Config (0x7) --- */
+#define TAA3040_ASI_FORMAT_SHIFT                    (0)
+#define TAA3040_ASI_FORMAT_MASK                     (0x03 << TAA3040_ASI_FORMAT_SHIFT) ///< Bits 1:0
+#define TAA3040_ASI_WORD_LENGTH_SHIFT               (2)
+#define TAA3040_ASI_WORD_LENGTH_MASK                (0x3 << TAA3040_ASI_WORD_LENGTH_SHIFT) ///< Bits 3:2
+#define TAA3040_FSYNC_POLARITY_SHIFT                (3)
+#define TAA3040_FSYNC_POLARITY_MASK                 (0x01 << TAA3040_FSYNC_POLARITY_SHIFT)
+#define TAA3040_BCLK_POLARITY_SHIFT                 (2)
+#define TAA3040_BLCK_POLARITY_MASK                  (0x01 << TAA3040_BCLK_POLARITY_SHIFT)
+#define TAA3040_TRANSMIT_EDGE_SHIFT                 (1)
+#define TAA3040_TRANSMIT_EDGE_MASK                  (0x1 << TAA3040_TRANSMIT_EDGE_SHIFT)
+#define TAA3040_TRANSMIT_FILL_SHIFT                 (0)
+#define TAA3040_TRANSMIT_FILL_MASK                  (0x1 << TAA3040_TRANSMIT_FILL_SHIFT)
+
+/* --- ASI Config 1 (0x8) --- */
+#define TAA3040_TRANSMIT_LSB_SHIFT                  (0x7)
+#define TAA3040_TRANSMIT_LSB_MASK                   (0x1 << TAA3040_TRANSMIT_LSB_SHIFT)
+#define TAA3040_TRANSMIT_KEEPER_SHIFT               (0x6)
+#define TAA3040_TRANSMIT_KEEPER_MASK                (0x3 << TAA3040_TRANSMIT_KEEPER_SHIFT)
+#define TAA3040_TRANSMIT_OFFSET_SHIFT               (0)
+#define TAA3040_TRANSMIT_OFFSET_MASK                (0xF << TAA3040_TRANSMIT_OFFSET_SHIFT)
+
+/* --- ASI Config 2 (0x9) --- */
+#define TAA3040_ASI_DAISY_SHIFT                     (7)
+#define TAA3040_ASI_DAISY_MASK                      (0x1 << TAA3040_ASI_DAISY_SHIFT)
+#define TAA3040_ASI_ERROR_SHIFT                     (5)
+#define TAA3040_ASI_ERROR_MASK                      (0x1 << TAA3040_ASI_ERROR_SHIFT)
+#define TAA3040_ASI_ERROR_RECOVERY_SHIFT            (4)
+#define TAA3040_ASI_ERROR_RECOVERY_MASK             (0x1 << TAA3040_ASI_ERROR_RECOVERY_SHIFT)
+
+/* --- ASI Channels  --- */
+#define TAA3040_ASI_CHANNEL_SLOT_SHIFT              (0)
+#define TAA3040_ASI_CHANNEL_SLOT_MASK               (0x1F << TAA3040_ASI_CHANNEL_SLOT_SHIFT)
+#define TAA3040_ASI_CHANNEL_OUTPUT_SHIFT            (6)
+#define TAA3040_ASI_CHANNEL_OUTPUT_MASK             (0x1 << TAA3040_ASI_CHANNEL_OUTPUT_SHIFT)
+
+/* --- Master Config (0x13-14) --- */
+#define TAA3040_MCLK_FREQ_SELECT_SHIFT              (0)
+#define TAA3040_MCLK_FREQ_SELECT_MASK               (0x7 << TAA3040_MCLK_FREQ_SELECT_SHIFT)
+#define TAA3040_SAMPLE_RATE_SHIFT                   (3)
+#define TAA3040_SAMPLE_RATE_MASK                    (0x1 << TAA3040_SAMPLE_RATE_SHIFT)
+#define TAA3040_BCLK_FSYNC_GATE_SHIFT               (4)
+#define TAA3040_BCLK_FSYNC_GATE_MASK                (0x1 << TAA3040_BCLK_FSYNC_GATE_SHIFT)
+#define TAA3040_AUTO_MODE_PLL_SHIFT                 (5)
+#define TAA3040_AUTO_MODE_PLL_MASK                  (0x1 << TAA3040_AUTO_MODE_PLL_SHIFT)
+#define TAA3040_AUTO_CLOCK_CONFIG_SHIFT             (6)
+#define TAA3040_AUTO_CLOCK_CONFIG_MASK              (0x1 << TAA3040_AUTO_CLOCK_CONFIG_SHIFT)
+#define TAA3040_MASTER_SLAVE_CONFIG_SHIFT           (7)
+#define TAA3040_MASTER_SLAVE_CONFIG_MASK            (0x1 << TAA3040_MASTER_SLAVE_CONFIG_SHIFT)
+
+#define TAA3040_FSYNC_BCLK_RATIO_SHIFT              (0)
+#define TAA3040_FSYNC_BCLK_RATIO_MASK               (0x7 << TAA3040_FSYNC_BCLK_RATIO_SHIFT)
+#define TAA3040_FSYNC_RATE_SHIFT                    (4)
+#define TAA3040_FSYNC_RATE_MASK                     (0xF << TAA3040_FSYNC_RATE_SHIFT)
+
+/* --- ASI Status (0x15) --- */
+#define TAA3040_FSYNC_RATIO_STATUS_SHIFT            (4)
+#define TAA3040_FSYNC_RATIO_STATUS_MASK             (0xF << TAA3040_FSYNC_RATIO_STATUS_SHIFT)
+#define TAA3040_FSYNC_RATE_STATUS_SHIFT             (0)
+#define TAA3040_FSYNC_RATE_STATUS_MASK              (0xF << TAA3040_FSYNC_RATE_SHIFT)
+
+/* --- Clock Source (0x16) --- */
+#define TAA3040_MCLK_RATIO_SEL_SHIFT                (3)
+#define TAA3040_MCLK_RATIO_SEL_MASK                 (0x7 <<  TAA3040_MCLK_RATIO_SEL_SHIFT)
+#define TAA3040_MCLK_FREQ_SEL_SHIFT                 (6)
+#define TAA3040_MCLK_FREQ_SEL_MASK                  (0x1 << TAA3040_MCLK_FREQ_SELECT_SHIFT)
+#define TAA3040_SLAVE_CLOCK_SOURCE_SHIFT            (7)
+#define TAA3040_SLAVE_CLOCK_SOURCE_MASK             (0x1 << TAA3040_SLAVE_CLOCK_SOURCE_SHIFT)
+
+/* --- PDM Clock Config (0x1F) --- */
+#define TAA3040_PDMCLK_DIVIDER_SHIFT                (0)
+#define TAA3040_PDMCLK_DIVIDER_MASK                 (0x3 << TAA3040_PDMCLK_DIVIDER_SHIFT)
+
+/* --- PDM Config (0x20) --- */
+#define TAA3040_PDMDIN1_EDGE_SHIFT                  (7)
+#define TAA3040_PDMDIN1_EDGE_MASK                   (0x1 << TAA3040_PDMDIN1_EDGE_SHIFT)
+#define TAA3040_PDMDIN2_EDGE_SHIFT                  (6)
+#define TAA3040_PDMDIN2_EDGE_MASK                   (0x1 << TAA3040_PDMDIN2_EDGE_SHIFT)
+#define TAA3040_PDMDIN3_EDGE_SHIFT                  (5)
+#define TAA3040_PDMDIN3_EDGE_MASK                   (0x1 << TAA3040_PDMDIN3_EDGE_SHIFT)
+#define TAA3040_PDMDIN4_EDGE_SHIFT                  (4)
+#define TAA3040_PDMDIN4_EDGE_MASK                   (0x1 << TAA3040_PDMDIN4_EDGE_SHIFT)
+
+/* --- GPIO1 Config (0x21) --- */
+#define TAA3040_GPIO_CONFIG_SHIFT                   (4)
+#define TAA3040_GPIO_CONFIG_MASK                    (0xF << TAA3040_GPIO_CONFIG_SHIFT) ///< Bits 7:4
+#define TAA3040_GPIO_DRIVE_MODE_SHIFT               (0)
+#define TAA3040_GPIO_DRIVE_MODE_MASK                (0x7 << TAA3040_GPIO_DRIVE_MODE_SHIFT) ///< Bits 0:2
+
+/* --- GPO Config (0x23-0x25) --- */
+#define TAA3040_GPO_CONFIG_SHIFT                    (4)
+#define TAA3040_GPO_CONFIG_MASK                     (0x0F << TAA3040_GPO_CONFIG_SHIFT) ///< Bits 3:0
+#define TAA3040_GPO_DRIVE_MODE_SHIFT                (0)
+#define TAA3040_GPO_DRIVE_MODE_MASK                 (0x7 << TAA3040_GPO_DRIVE_MODE_SHIFT) ///< Bits 7:4
+
+/* --- GPO Value Register (0x29) --- */
+#define TAA3040_GPO1_VALUE_SHIFT                    (0x7)
+#define TAA3040_GPO1_VALUE_MASK                     (0x1 << TAA3040_GPO1_VALUE_SHIFT)
+#define TAA3040_GPO2_VALUE_SHIFT                    (0x6)
+#define TAA3040_GPO2_VALUE_MASK                     (0x1 << TAA3040_GPO2_VALUE_SHIFT)
+#define TAA3040_GPO3_VALUE_SHIFT                    (0x5)
+#define TAA3040_GPO4_VALUE_MASK                     (0x1 << TAA3040_GPO3_VALUE_SHIFT)
+#define TAA3040_GPO4_VALUE_SHIFT                    (0x4)
+#define TAA3040_GPO4_VALUE_MASK                     (0x1 << TAA3040_GPO4_VALUE_SHIFT)
+
+/* --- GPIO Monitoring (0x2A) --- */
+#define TAA3040_GPIO1_MON_SHIFT                     (7)
+#define TAA3040_GPIO1_MON_MASK                      (0x1 << TAA3040_GPIO1_MON_SHIFT)
+
+/* --- GPI Config 1 (0x2B) --- */
+#define TAA3040_GPI1_CONFIG_SHIFT                   (0x4)
+#define TAA3040_GPI1_CONFIG_MASK                    (0x7 << TAA3040_GPI1_CONFIG_SHIFT)
+#define TAA3040_GPI2_CONFIG_SHIFT                   (0x0)
+#define TAA3040_GPI2_CONFIG_MASK                    (0x7 << TAA3040_GPI2_CONFIG_SHIFT)
+
+/* --- GPI Config 2 (0x2C) --- */
+#define TAA3040_GPI3_CONFIG_SHIFT                   (4)
+#define TAA3040_GPI3_CONFIG_MASK                    (0x7 << TAA3040_GPI3_CONFIG_SHIFT)
+#define TAA3040_GPI4_CONFIG_SHIFT                   (0)
+#define TAA3040_GPI4_CONFIG_MASK                    (0x7 << TAA3040_GPI4_CONFIG_SHIFT)
+
+/* --- GPI Monitor Register (0x2F) --- */
+#define TAA3040_GPI1_MONITOR_SHIFT                  (0x7)
+#define TAA3040_GPI1_MONITOR_MASK                   (0x1 << TAA3040_GPI1_MONITOR_SHIFT)
+#define TAA3040_GPI2_MONITOR_SHIFT                  (0x6)
+#define TAA3040_GPI2_MONITOR_MASK                   (0x1 << TAA3040_GPI2_MONITOR_SHIFT)
+#define TAA3040_GPI3_MONITOR_SHIFT                  (0x5)
+#define TAA3040_GPI4_MONITOR_MASK                   (0x1 << TAA3040_GPI3_MONITOR_SHIFT)
+#define TAA3040_GPI4_MONITOR_SHIFT                  (0x4)
+#define TAA3040_GPI4_MONITOR_MASK                   (0x1 << TAA3040_GPI4_MONITOR_SHIFT)
+
+/* --- Interrupt Config (0x32) --- */
+#define TAA3040_INTERRUPT_POLARITY_SHIFT            (7)
+#define TAA3040_INTERRUPT_POLARITY_MASK             (0x1 << TAA3040_INTERRUPT_POLARITY_SHIFT)
+#define TAA3040_INTERRUPT_EVENT_SHIFT               (5)
+#define TAA3040_INTERRUPT_EVENT_MASK                (0x7 << TAA3040_INTERRUPT_EVENT_SHIFT)
+#define TAA3040_INTERRUPT_LATCH_SHIFT               (0x2)
+#define TAA3040_INTERRUPT_LATCH_MASK                (0x1 << TAA3040_INTERRUPT_LATCH_SHIFT)
+
+/* --- Interrupt Mask (0x33) --- */
+#define TAA3040_INTERRUPT_ASI_ERROR_SHIFT           (7)
+#define TAA3040_INTERRUPT_ASI_ERROR_MASK            (0x1 << TAA3040_INTERRUPT_ASI_ERROR_SHIFT)
+#define TAA3040_INTERRUPT_PLL_ERROR_SHIFT           (6)
+#define TAA3040_INTERRUPT_PLL_ERROR_MASK            (0x1 << TAA3040_INTERRUPT_PLL_ERROR_SHIFT)
+
+/* --- Interrupt Latch (0x36) --- */
+
+
+/* --- Bias Configuration (0x3B) --- */
+#define TAA3040_MIC_BIAS_SHIFT                      (4)
+#define TAA3040_MIC_BIAS_MASK                       (0x7 << TAA3040_MIC_BIAS_SHIFT)
+#define TAA3040_ADC_SCALE_SHIFT                     (0)
+#define TAA3040_ADC_SCALE_MASK                      (0x3 << TAA3040_ADC_SCALE_SHIFT)
+
+/* --- Channel Config (0x3C-0x63) --- */
+// Config 0
+#define TAA3040_CHANNEL_AGC_EN_SHIFT                (0x0)
+#define TAA3040_CHANNEL_AGC_EN_MASK                 (0x1 << TAA3040_CHANNEL_AGC_EN_SHIFT)
+#define TAA3040_CHANNEL_IMPEDANCE_SHIFT             (0x2)
+#define TAA3040_CHANNEL_IMPEDANCE_MASK              (0x3 << TAA3040_CHANNEL_IMPEDANCE_SHIFT)
+#define TAA3040_CHANNEL_COUPLING_SHIFT              (4)
+#define TAA3040_CHANNEL_COUPLING_MASK               (0x1 << TAA3040_CHANNEL_COUPLING_SHIFT)
+#define TAA3040_CHANNEL_SOURCE_SHIFT                (5)
+#define TAA3040_CHANNEL_SOURCE_MASK                 (0x3 << TAA3040_CHANNEL_SOURCE_SHIFT)
+#define TAA3040_CHANNEL_INPUT_TYPE_SHIFT            (7)
+#define TAA3040_CHANNEL_INPUT_TYPE_MASK             (0x1 << TAA3040_CHANNEL_INPUT_TYPE_SHIFT)
+
+// Config 1
+#define TAA3040_CHANNEL_GAIN_SHIFT                  (0x2)
+#define TAA3040_CHANNEL_GAIN_MASK                   (0x3F << TAA3040_CHANNEL_GAIN_SHIFT)
+
+// Config 2
+#define TAA3040_CHANNEL_VOLUME_SHIFT                (0x0)
+#define TAA3040_CHANNEL_VOLUME_MASK                 (0xFF << TAA3040_CHANNEL_VOLUME_SHIFT)
+
+// Config 3
+#define TAA3040_CHANNEL_GAIN_CAL_SHIFT              (0x4)
+#define TAA3040_CHANNEL_GAIN_CAL_MASK               (0xF << TAA3040_CHANNEL_GAIN_CAL_SHIFT)
+
+// Config 4
+#define TAA3040_CHANNEL_PHASE_CAL_SHIFT             (0x0)
+#define TAA3040_CHANNEL_PHASE_CAL_MASK              (0xFF << TAA3040_CHANNEL_PHASE_CAL_SHIFT) 
+
+/* --- DSP Config (0x6C) --- */
+#define TAA3040_VOLUME_GANGED_SHIFT                 (7)
+#define TAA3040_VOLUME_GANGED_MASK                  (0x1 << TAA3040_VOLUME_GANGED_SHIFT)
+#define TAA3040_BIQUAD_COUNT_SHIFT                  (5)
+#define TAA3040_BIQUAD_COUNT_MASK                   (0x3 << TAA3040_BIQUAD_COUNT_SHIFT)
+#define TAA3040_SOFT_SWEEP_SHIFT                    (4)
+#define TAA3040_SOFT_SWEEP_MASK                     (0x1 <<< TAA3040_SOFT_SWEEP_SHIFT)
+#define TAA3040_AGC_SELECT_SHIFT                    (3)
+#define TAA3040_AGC_SELECT_MASK                     (0x1 << TAA3040_AGC_SELECT_SHIFT)
+
+/* --- AGC Config (0xE7) --- */
+#define TAA3040_AGC_LEVEL_SHIFT                     (4)
+#define TAA3040_AGC_LEVEL_MASK                      (0xF << TAA3040_AGC_LEVEL_SHIFT)
+#define TAA3040_AGC_MAX_GAIN_SHIFT                  (0)
+#define TAA3040_AGC_MAX_GAIN_MASK                   (0xF << TAA3040_AGC_MAX_GAIN_SHIFT)
+
+/* --- Input Enable (0x73) --- */
+#define TAA3040_CHANNEL1_ENABLE_SHIFT               (0x7)
+#define TAA3040_CHANNEL1_ENABLE_MASK                (0x1 << TAA3040_CHANNEL1_ENABLE_SHIFT)
+#define TAA3040_CHANNEL2_ENABLE_SHIFT               (0x6)
+#define TAA3040_CHANNEL2_ENABLE_MASK                (0x1 << TAA3040_CHANNEL2_ENABLE_SHIFT)
+#define TAA3040_CHANNEL3_ENABLE_SHIFT               (0x5)
+#define TAA3040_CHANNEL3_ENABLE_MASK                (0x1 << TAA3040_CHANNEL3_ENABLE_SHIFT)
+#define TAA3040_CHANNEL4_ENABLE_SHIFT               (0x4)
+#define TAA3040_CHANNEL4_ENABLE_MASK                (0x1 << TAA3040_CHANNEL4_ENABLE_SHIFT)
+#define TAA3040_CHANNEL5_ENABLE_SHIFT               (0x3)
+#define TAA3040_CHANNEL5_ENABLE_MASK                (0x1 << TAA3040_CHANNEL5_ENABLE_SHIFT)
+#define TAA3040_CHANNEL6_ENABLE_SHIFT               (0x3)
+#define TAA3040_CHANNEL6_ENABLE_MASK                (0x1 << TAA3040_CHANNEL6_ENABLE_SHIFT)
+#define TAA3040_CHANNEL7_ENABLE_SHIFT               (0x1)
+#define TAA3040_CHANNEL7_ENABLE_MASK                (0x1 << TAA3040_CHANNEL7_ENABLE_SHIFT)
+#define TAA3040_CHANNEL8_ENABLE_SHIFT               (0x0)
+#define TAA3040_CHANNEL8_ENABLE_MASK                (0x1 << TAA3040_CHANNEL8_ENABLE_SHIFT)
+
+/* --- Output Enable (0x74) --- */
+#define TAA3040_ASI_CHANNEL1_ENABLE_SHIFT           (0x7)
+#define TAA3040_ASI_CHANNEL1_ENABLE_MASK            (0x1 << TAA3040_ASI_CHANNEL1_ENABLE_SHIFT)
+#define TAA3040_ASI_CHANNEL2_ENABLE_SHIFT           (0x6)
+#define TAA3040_ASI_CHANNEL2_ENABLE_MASK            (0x1 << TAA3040_ASI_CHANNEL2_ENABLE_SHIFT)
+#define TAA3040_ASI_CHANNEL3_ENABLE_SHIFT           (0x5)
+#define TAA3040_ASI_CHANNEL3_ENABLE_MASK            (0x1 << TAA3040_ASI_CHANNEL3_ENABLE_SHIFT)
+#define TAA3040_ASI_CHANNEL4_ENABLE_SHIFT           (0x4)
+#define TAA3040_ASI_CHANNEL4_ENABLE_MASK            (0x1 << TAA3040_ASI_CHANNEL4_ENABLE_SHIFT)
+#define TAA3040_ASI_CHANNEL5_ENABLE_SHIFT           (0x3)
+#define TAA3040_ASI_CHANNEL5_ENABLE_MASK            (0x1 << TAA3040_ASI_CHANNEL5_ENABLE_SHIFT)
+#define TAA3040_ASI_CHANNEL6_ENABLE_SHIFT           (0x3)
+#define TAA3040_ASI_CHANNEL6_ENABLE_MASK            (0x1 << TAA3040_ASI_CHANNEL6_ENABLE_SHIFT)
+#define TAA3040_ASI_CHANNEL7_ENABLE_SHIFT           (0x1)
+#define TAA3040_ASI_CHANNEL7_ENABLE_MASK            (0x1 << TAA3040_ASI_CHANNEL7_ENABLE_SHIFT)
+#define TAA3040_ASI_CHANNEL8_ENABLE_SHIFT           (0x0)
+#define TAA3040_ASI_CHANNEL8_ENABLE_MASK            (0x1 << TAA3040_ASI_CHANNEL8_ENABLE_SHIFT)
+
+/* --- Power Config (0x75) --- */
+#define TAA3040_DYNAMIC_POWER_SHIFT                 (0x4)
+#define TAA3040_DYNAMIC_POWER_MASK                  (0x1 << TAA3040_DYNAMIC_POWER_SHIFT)
+#define TAA3040_DYNAMIC_POWER_CHANNELS_SHIFT        (0x2)
+#define TAA3040_DYNAMIC_POWER_CHANNELS_MASK         (0x3 << TAA3040_DYNAMIC_POWER_SHIFT)
+#define TAA3040_PLL_ENABLE_SHIFT                    (0x5)
+#define TAA3040_PLL_ENABLE_MASK                     (0x1 << TAA3040_PLL_ENABLE_SHIFT)
+#define TAA3040_ADC_ENABLE_SHIFT                    (0x6)
+#define TAA3040_ADC_ENABLE_MASK                     (0x1 << TAA3040_ADC_ENABLE_SHIFT)
+#define TAA3040_MIC_BIAS_ENABLE_SHIFT               (7)
+#define TAA3040_MIC_BIAS_ENABLE_MASK                (0x1 << TAA3040_MIC_BIAS_ENABLE_SHIFT)
+
+/* --- Input Status Register (0x77) ---*/
+#define TAA3040_CHANNEL1_STATUS_SHIFT               (0x7)
+#define TAA3040_CHANNEL1_STATUS_MASK                (0x1 << TAA3040_CHANNEL1_STATUS_SHIFT)
+#define TAA3040_CHANNEL2_STATUS_SHIFT               (0x6)
+#define TAA3040_CHANNEL2_STATUS_MASK                (0x1 << TAA3040_CHANNEL2_STATUS_SHIFT)
+#define TAA3040_CHANNEL3_STATUS_SHIFT               (0x5)
+#define TAA3040_CHANNEL3_STATUS_MASK                (0x1 << TAA3040_CHANNEL3_STATUS_SHIFT)
+#define TAA3040_CHANNEL4_STATUS_SHIFT               (0x4)
+#define TAA3040_CHANNEL4_STATUS_MASK                (0x1 << TAA3040_CHANNEL4_STATUS_SHIFT)
+#define TAA3040_CHANNEL5_STATUS_SHIFT               (0x3)
+#define TAA3040_CHANNEL5_STATUS_MASK                (0x1 << TAA3040_CHANNEL5_STATUS_SHIFT)
+#define TAA3040_CHANNEL6_STATUS_SHIFT               (0x3)
+#define TAA3040_CHANNEL6_STATUS_MASK                (0x1 << TAA3040_CHANNEL6_STATUS_SHIFT)
+#define TAA3040_CHANNEL7_STATUS_SHIFT               (0x1)
+#define TAA3040_CHANNEL7_STATUS_MASK                (0x1 << TAA3040_CHANNEL7_STATUS_SHIFT)
+#define TAA3040_CHANNEL8_STATUS_SHIFT               (0x0)
+#define TAA3040_CHANNEL8_STATUS_MASK                (0x1 << TAA3040_CHANNEL8_STATUS_SHIFT)
+
+/* --- IIR Config (Page 4, 0x10) --- */
+#define TAA3040_IIR_ENABLE_MASK                     (0x01) ///< Bit 0
+#define TAA3040_IIR_MODE_MASK                       (0x06) ///< Bits 2:1
+#define TAA3040_IIR_MODE_SHIFT                      (1)
+
+/* === Helper Macros === */
+#define TAA3040_REG_CH_CONFIG(ch)                   (TAA3040_REG_CHANNEL_CONFIG_BASE + (ch * TAA3040_CHANNEL_REGISTER_ENTRIES))
+#define TAA3040_REG_CH_VOLUME(ch)                   (TAA3040_REG_CHANNEL_VOLUME_BASE + (ch * TAA3040_CHANNEL_REGISTER_ENTRIES))
+#define TAA3040_REG_CH_GAIN(ch)                     (TAA3040_REG_CHANNEL_GAIN_BASE + (ch * TAA3040_CHANNEL_REGISTER_ENTRIES))
+#define TAA3040_REG_CH_GAIN_CAL(ch)                 (TAA3040_REG_CHANNEL_GAIN_CAL_BASE + (ch * TAA3040_CHANNEL_REGISTER_ENTRIES))
+#define TAA3040_REG_CH_PHASE_CAL(ch)                (TAA3040_REG_CHANNEL_PHASE_CAL_BASE + (ch * TAA3040_CHANNEL_REGISTER_ENTRIES))
+
+
+#endif /* TAA3040_REGISTERS_H */
