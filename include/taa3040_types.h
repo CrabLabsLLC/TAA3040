@@ -460,6 +460,7 @@ typedef struct {
     taa3040_gpio_config_t gpio_config;                              ///< Pin configuraton
     taa3040_dsp_config_t dsp_config;                                ///< Channel Filtering 
     taa3040_mixer_config_t mixer_config;                            ///< Mixer matrix configuration
+    taa3040_interrupt_config_t interrupt_config;                    ///< Interrupt Configuration
 } taa3040_config_t;
 
 /**
@@ -618,6 +619,17 @@ static const taa3040_mixer_config_t default_mixer_config = {
         { { 0, 0, 0, 0, 0, 0, 1, 0 } }, // Mixer configuration for channel 7
         { { 0, 0, 0, 0, 0, 0, 0, 1 } }  // Mixer configuration for channel 8
     }
+};
+
+static const taa3040_interrupt_config_t taa3040_default_interrupt_config = 
+{
+    .event = TAA3040_INTERRUPT_EVENT_ASSERT,
+    .polarity = false, // active low
+    .latch_enable = false,
+    .mask_asi_interrupt = true,
+    .latch_asi_interrupt = false,
+    .mask_pll_interrupt = true,
+    .latch_pll_interrupt = false
 };
 
 static const taa3040_channel_config_t taa3040_default_channel_config = 
@@ -975,5 +987,15 @@ const taa3040_config_t taa3040_default_config =
             .dynamic_mode_channels = TAA3040_DYNAMIC_MODE_CHANNELS_1_2,
             .dreg_shutdown_time = TAA3040_DREG_SHUTDOWN_TIME_30MS
         }
+    },
+    .interrupt_config = 
+    {
+        .event = TAA3040_INTERRUPT_EVENT_ASSERT,
+        .polarity = false, // active low
+        .latch_enable = false,
+        .mask_asi_interrupt = true,
+        .latch_asi_interrupt = false,
+        .mask_pll_interrupt = true,
+        .latch_pll_interrupt = false
     }
 };

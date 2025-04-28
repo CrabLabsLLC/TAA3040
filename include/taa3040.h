@@ -174,6 +174,62 @@ bool taa3040_set_mixer_config(const taa3040_t *const dev, const taa3040_mixer_co
  */
 bool taa3040_get_mixer_config(const taa3040_t *const dev, taa3040_mixer_config_t *const mixer_config);
 
+/**
+ * @brief 
+ * 
+ * @param dev 
+ * @param dsp_config 
+ * @return true 
+ * @return false 
+ */
+bool taa3040_set_dsp_config(const taa3040_t* const dev, const taa3040_dsp_config_t* const dsp_config);
+
+/**
+ * @brief 
+ * 
+ * @param dev 
+ * @param dsp_config 
+ * @return true 
+ * @return false 
+ */
+bool taa3040_get_dsp_config(const taa3040_t* const dev, taa3040_dsp_config_t* const dsp_config);
+
+/**
+ * @brief Set GPIO pin modes and drive types.
+ *
+ * @param[in] dev Device handle.
+ * @param[in] gpio_config Pointer to constant GPIO configuration.
+ * @return true if successful, false otherwise.
+ */
+bool taa3040_get_gpio_config(const taa3040_t *const dev, const taa3040_gpio_config_t *const gpio_config);
+
+/**
+ * @brief Set GPIO pin modes and drive types.
+ *
+ * @param[in] dev Device handle.
+ * @param[in] gpio_config Pointer to constant GPIO configuration.
+ * @return true if successful, false otherwise.
+ */
+bool taa3040_set_gpio_config(const taa3040_t *const dev, const taa3040_gpio_config_t *const gpio_config);
+
+/**
+ * @brief Configure interrupt polarity, edge trigger, and latch behavior.
+ *
+ * @param[in] dev Device handle.
+ * @param[in] int_config Pointer to constant interrupt configuration.
+ * @return true if successful, false otherwise.
+ */
+bool taa3040_set_interrupt_config(const taa3040_t *const dev, const taa3040_interrupt_config_t *const int_config);
+
+/**
+ * @brief Configure interrupt polarity, edge trigger, and latch behavior.
+ *
+ * @param[in] dev Device handle.
+ * @param[in] int_config Pointer to constant interrupt configuration.
+ * @return true if successful, false otherwise.
+ */
+bool taa3040_get_interrupt_config(const taa3040_t *const dev, const taa3040_interrupt_config_t *const int_config);
+
 /* === Gain, Volume, and AGC === */
 
 /**
@@ -217,65 +273,26 @@ bool taa3040_set_digital_volume(const taa3040_t *const dev, uint8_t channel, uin
 bool taa3040_get_digital_volume(const taa3040_t *const dev, uint8_t channel, uint8_t *const volume_code);
 
 /**
- * @brief Enable or disable automatic gain control (AGC) on a channel.
- *
- * @param[in] dev Device handle.
- * @param[in] channel Channel index (0–7).
- * @param[in] enable True = enable AGC, False = disable.
- * @return true if successful, false otherwise.
+ * @brief 
+ * 
+ * @param dev 
+ * @param channel 
+ * @return true 
+ * @return false 
  */
-bool taa3040_enable_agc(const taa3040_t *const dev, uint8_t channel, bool enable);
+bool taa3040_enable_channel(const taa3040_t* const dev, const uint8_t channel);
 
 /**
- * @brief Check if AGC is enabled for a channel.
- *
- * @param[in] dev Device handle.
- * @param[in] channel Channel index (0–7).
- * @param[out] enabled Pointer to receive AGC enabled state.
- * @return true if successful, false otherwise.
+ * @brief 
+ * 
+ * @param dev 
+ * @param channel 
+ * @return true 
+ * @return false 
  */
-bool taa3040_is_agc_enabled(const taa3040_t *const dev, uint8_t channel, bool *const enabled);
-
-/* === Filter Configuration === */
-
-/**
- * @brief Set custom first-order IIR filter coefficients.
- *
- * @param[in] dev Device handle.
- * @param[in] iir Pointer to constant IIR filter structure.
- * @return true if successful, false otherwise.
- */
-bool taa3040_set_custom_iir_filter(const taa3040_t *const dev, const taa3040_iir_filter_t *const iir);
-
-/**
- * @brief Set biquad filter coefficients for a stage.
- *
- * @param[in] dev Device handle.
- * @param[in] index Filter index (0–11).
- * @param[in] biquad Pointer to constant biquad structure.
- * @return true if successful, false otherwise.
- */
-bool taa3040_set_biquad_filter(const taa3040_t *const dev, uint8_t index, const taa3040_biquad_filter_t *const biquad);
+bool taa3040_enable_channel(const taa3040_t* const dev, const uint8_t channel);
 
 /* === GPIO and Interrupt Configuration === */
-
-/**
- * @brief Set GPIO pin modes and drive types.
- *
- * @param[in] dev Device handle.
- * @param[in] gpio_config Pointer to constant GPIO configuration.
- * @return true if successful, false otherwise.
- */
-bool taa3040_set_gpio_config(const taa3040_t *const dev, const taa3040_gpio_config_t *const gpio_config);
-
-/**
- * @brief Configure interrupt polarity, edge trigger, and latch behavior.
- *
- * @param[in] dev Device handle.
- * @param[in] int_config Pointer to constant interrupt configuration.
- * @return true if successful, false otherwise.
- */
-bool taa3040_set_interrupt_config(const taa3040_t *const dev, const taa3040_interrupt_config_t *const int_config);
 
 /* === Device Status === */
 
@@ -287,8 +304,6 @@ bool taa3040_set_interrupt_config(const taa3040_t *const dev, const taa3040_inte
  * @return true if successful, false otherwise.
  */
 bool taa3040_get_status(const taa3040_t *const dev, taa3040_status_t *const status);
-
-bool taa3040_write_register(const taa3040_t* const dev, const uint8_t page, const uint8_t reg)
 
 #ifdef __cplusplus
 }
