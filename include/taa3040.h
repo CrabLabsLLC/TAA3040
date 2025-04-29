@@ -201,7 +201,7 @@ bool taa3040_get_dsp_config(const taa3040_t* const dev, taa3040_dsp_config_t* co
  * @param[in] gpio_config Pointer to constant GPIO configuration.
  * @return true if successful, false otherwise.
  */
-bool taa3040_get_gpio_config(const taa3040_t *const dev, const taa3040_gpio_config_t *const gpio_config);
+bool taa3040_get_gpio_config(const taa3040_t *const dev, taa3040_gpio_config_t *const gpio_config);
 
 /**
  * @brief Set GPIO pin modes and drive types.
@@ -228,7 +228,7 @@ bool taa3040_set_interrupt_config(const taa3040_t *const dev, const taa3040_inte
  * @param[in] int_config Pointer to constant interrupt configuration.
  * @return true if successful, false otherwise.
  */
-bool taa3040_get_interrupt_config(const taa3040_t *const dev, const taa3040_interrupt_config_t *const int_config);
+bool taa3040_get_interrupt_config(const taa3040_t* const dev, taa3040_interrupt_config_t *const int_config);
 
 /* === Gain, Volume, and AGC === */
 
@@ -276,6 +276,29 @@ bool taa3040_get_digital_volume(const taa3040_t *const dev, uint8_t channel, uin
  * @brief 
  * 
  * @param dev 
+ * @param index 
+ * @param filter 
+ * @return true 
+ * @return false 
+ */
+bool taa3040_get_filter(const taa3040_t* const dev, const uint8_t index, taa3040_biquad_filter_t* const filter);
+
+/**
+ * @brief 
+ * 
+ * @param dev 
+ * @param index
+ * @param filter 
+ * @return true 
+ * @return false 
+ */
+bool taa3040_set_filter(const taa3040_t* const dev, const uint8_t index, taa3040_biquad_filter_t* const filter);
+
+
+/**
+ * @brief 
+ * 
+ * @param dev 
  * @param channel 
  * @return true 
  * @return false 
@@ -290,7 +313,7 @@ bool taa3040_enable_channel(const taa3040_t* const dev, const uint8_t channel);
  * @return true 
  * @return false 
  */
-bool taa3040_enable_channel(const taa3040_t* const dev, const uint8_t channel);
+bool taa3040_disable_channel(const taa3040_t* const dev, const uint8_t channel);
 
 /* === GPIO and Interrupt Configuration === */
 

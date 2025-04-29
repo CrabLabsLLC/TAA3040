@@ -1,0 +1,36 @@
+# Project
+PROJECT_NAME           = "TAA3040 Driver"
+PROJECT_BRIEF          = "C driver for the TI TAA3040 audio ADC"
+PROJECT_NUMBER         = 0.1
+OUTPUT_DIRECTORY       = .
+
+# Input
+INPUT                  = ../src/ ../include/
+FILE_PATTERNS          = *.c *.h
+RECURSIVE              = YES
+
+# Extract everything
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = YES
+
+# Diagrams
+HAVE_DOT               = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+DOT_IMAGE_FORMAT       = svg
+
+# HTML
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+INLINE_SOURCES         = YES
+SOURCE_BROWSER         = YES
+
+# XML for Breathe
+GENERATE_XML           = YES
+XML_OUTPUT             = xml
+
+# Warnings
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+

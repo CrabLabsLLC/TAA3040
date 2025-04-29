@@ -1,4 +1,18 @@
+/**
+ * @file taa3040_types.h
+ * @author Orion Serup (orion@crablabs.io)
+ * @brief Type definitions for the TAA3040 library
+ * @version 0.1
+ * @date 2025-04-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 
+#pragma once
+
+#ifndef TAA3040_TYPES_H
+#define TAA3040_TYPES_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -6,8 +20,8 @@
 #define TAA3040_NUM_CHANNELS    8   ///< 8 Input and Output channels
 #define TAA3040_NUM_GPI         4   ///< 4 Digital Inputs (multipupose pins)
 #define TAA3040_NUM_GPO         4   ///< 4 Digital Outputs (multipurpose pins)
-#define TAA3040_NUM_BIQUADS     12  ///< 
-#define TAA3040_NUM_MIXERS      8
+#define TAA3040_NUM_BIQUADS     12  ///< Numbers of filters
+#define TAA3040_NUM_MIXERS      8   ///< Channel Mixers
 
 /* === Enumerations === */
 
@@ -253,7 +267,7 @@ typedef enum
     TAA3040_STATUS_SLEEP        = 0x4, ///< Device is in Sleep or Shutdown mode
     TAA3040_STATUS_ACTIVE_OFF   = 0x6, ///< Device is Active but all channels are off
     TAA3040_STATUS_ACTIVE_ON    = 0x7, ///< Device is Active and at least one channel is on
-} taa3040_status_t;
+} taa3040_device_status_t;
 
 /**
  * @brief Defines a biquad filter
@@ -306,6 +320,16 @@ typedef struct {
     taa3040_gpo_config_t gpo_configs[TAA3040_NUM_GPO];  ///< GPO pin configurations
     taa3040_gpi_mode_t gpi_modes[TAA3040_NUM_GPI];      ///< GPI pin mode selections
 } taa3040_gpio_config_t;
+
+/**
+ * @brief 
+ * 
+ */
+typedef struct 
+{
+    taa3040_device_status_t device_status;
+    bool channel_powered_up[TAA3040_NUM_CHANNELS];  
+} taa3040_status_t;
 
 /**
  * @brief Main audio serial output configuration.
@@ -463,16 +487,6 @@ typedef struct {
     taa3040_interrupt_config_t interrupt_config;                    ///< Interrupt Configuration
 } taa3040_config_t;
 
-/**
- * @brief Registers are specific per page
- * 
- */
-typedef struct 
-{
-    uint8_t page: 2;
-    uint8_t reg;
-} taa3040_reg_t;
-
 /* === HAL Function Pointer Types === */
 
 /**
@@ -483,7 +497,7 @@ typedef struct
  * @param[in] data Byte to write.
  * @return true on success, false on failure.
  */
-typedef bool (*taa3040_i2c_write_fn)(const uint8_t address, const uint8_t reg, const uint8_t data);
+typedef bool (*taa3040_i2c_write_fn)(const uint8_t address, const uint8_t reg, const void* const data, const uint8_t length);
 
 /**
  * @brief I2C read function type.
@@ -493,7 +507,7 @@ typedef bool (*taa3040_i2c_write_fn)(const uint8_t address, const uint8_t reg, c
  * @param[out] data Pointer to store the read byte.
  * @return true on success, false on failure.
  */
-typedef bool (*taa3040_i2c_read_fn)(const uint8_t address, const uint8_t reg, uint8_t *const data);
+typedef bool (*taa3040_i2c_read_fn)(const uint8_t address, const uint8_t reg, void *const data, uint8_t length);
 
 /**
  * @brief GPIO control function type.
@@ -527,7 +541,7 @@ typedef struct taa3040 {
 } taa3040_t;
 
 /* Default ASI Channel Configuration */
-static const taa3040_asi_channel_config_t default_asi_channel_config = 
+static const taa3040_asi_channel_config_t TAA3040_DEFAULT_ASI_CHANNEL_CONFIG = 
 {
     .enabled = false,
     .gpio_output = false,
@@ -535,7 +549,7 @@ static const taa3040_asi_channel_config_t default_asi_channel_config =
 };
 
 /* Default ASI Configuration */
-static const taa3040_asi_config_t default_asi_config = 
+static const taa3040_asi_config_t TAA3040_DEFAULT_ASI_CONFIG = 
 {
     .mode = TAA3040_ASI_MODE_TDM,
     .word_length = TAA3040_ASI_WORD_LENGTH_24BITS,
@@ -608,8 +622,10 @@ static const taa3040_asi_config_t default_asi_config =
 };
 
 /* Default Mixer Configuration */
-static const taa3040_mixer_config_t default_mixer_config = {
-    .channels = {
+static const taa3040_mixer_config_t TAA3040_DEFAULT_MIXER_CONFIG = 
+{
+    .channels = 
+    {
         { { 1, 0, 0, 0, 0, 0, 0, 0 } }, // Mixer configuration for channel 1
         { { 0, 1, 0, 0, 0, 0, 0, 0 } }, // Mixer configuration for channel 2
         { { 0, 0, 1, 0, 0, 0, 0, 0 } }, // Mixer configuration for channel 3
@@ -621,7 +637,7 @@ static const taa3040_mixer_config_t default_mixer_config = {
     }
 };
 
-static const taa3040_interrupt_config_t taa3040_default_interrupt_config = 
+static const taa3040_interrupt_config_t TAA3040_DEFAULT_INTERRUPT_CONFIG = 
 {
     .event = TAA3040_INTERRUPT_EVENT_ASSERT,
     .polarity = false, // active low
@@ -632,7 +648,7 @@ static const taa3040_interrupt_config_t taa3040_default_interrupt_config =
     .latch_pll_interrupt = false
 };
 
-static const taa3040_channel_config_t taa3040_default_channel_config = 
+static const taa3040_channel_config_t TAA3040_DEFAULT_CHANNEL_CONFIG = 
 {
     .enabled = false,
     .is_microphone = true,
@@ -650,14 +666,15 @@ static const taa3040_channel_config_t taa3040_default_channel_config =
 };
 
 /* Default DSP Configuration */
-static const taa3040_dsp_config_t default_dsp_config = {
+static const taa3040_dsp_config_t TAA3040_DEFAULT_DSP_CONFIG = 
+{
     .volume_ganged = false,
     .biquads_per_channel = 0,
     .automatic_gain_control = true,
     .high_pass_filter = TAA3040_HIGH_PASS_FILTER_FS_500,
     .decimation_filter = TAA3040_DECIMATION_FILTER_LIN_PHASE,
     .channel_summing = TAA3040_CHANNEL_SUMMING_MODE_NONE,
-    .biquad_filters = {0}, /* Initialize all to zero */
+    .biquad_filters = {{0}}, /* Initialize all to zero */
     .advanced = {
         .soft_stepping = true,
         .automatic_gain_control_level = 10,
@@ -667,7 +684,7 @@ static const taa3040_dsp_config_t default_dsp_config = {
 };
 
 /* Default System Configuration */
-static const taa3040_system_config_t default_system_config = 
+static const taa3040_system_config_t TAA3040_DEFAULT_SYSTEM_CONFIG = 
 {
     .adc_enabled = true,
     .mic_bias_enabled = true,
@@ -687,14 +704,15 @@ static const taa3040_system_config_t default_system_config =
 
 
 /* Default GPO Configuration */
-const taa3040_gpo_config_t default_gpo_config = 
+static const taa3040_gpo_config_t TAA3040_DEFAULT_GPIO_CONFIG = 
 {
     .mode = TAA3040_GPO_MODE_OUTPUT,
     .drive = TAA3040_GPO_DRIVE_PUSH_PULL
 };
 
 /* Default GPIO Configuration */
-const taa3040_gpio_config_t default_gpio_config = {
+static const taa3040_gpio_config_t default_gpio_config = 
+{
     .gpo_configs = 
     {
         {
@@ -719,9 +737,7 @@ const taa3040_gpio_config_t default_gpio_config = {
     }
 };
 
-
-
-const taa3040_config_t taa3040_default_config =
+static const taa3040_config_t TAA3040_DEFAULT_CONFIG =
 {
     .asi_config = 
     {
@@ -925,7 +941,7 @@ const taa3040_config_t taa3040_default_config =
         .high_pass_filter = TAA3040_HIGH_PASS_FILTER_FS_500,
         .decimation_filter = TAA3040_DECIMATION_FILTER_LIN_PHASE,
         .channel_summing = TAA3040_CHANNEL_SUMMING_MODE_NONE,
-        .biquad_filters = {0}, /* Initialize all to zero */
+        .biquad_filters = {{0}}, /* Initialize all to zero */
         .advanced = {
             .soft_stepping = true,
             .automatic_gain_control_level = 10,
@@ -999,3 +1015,5 @@ const taa3040_config_t taa3040_default_config =
         .latch_pll_interrupt = false
     }
 };
+
+#endif

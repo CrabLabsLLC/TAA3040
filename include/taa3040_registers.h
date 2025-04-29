@@ -1,6 +1,13 @@
 /**
- * @file taa3040_registers.h
- * @brief Register addresses and bitfields for TAA3040 device.
+ * @file taa3040_registers.h'
+ * @author Orion Serup (orion@crablabs.io)
+ * @brief The register and bitmask definitions for the TAA3040 driver
+ * @version 0.1
+ * @date 2025-04-29
+ * 
+ * @license MIT
+ * @copyright Copyright (c) Crab Labs LLC 2025
+ * 
  */
 
 #ifndef TAA3040_REGISTERS_H
@@ -64,6 +71,9 @@
 /* === DSP Configuration (Page 0) === */
 #define TAA3040_REG_DSP_CONFIG0                     0x6B  ///< Filtering 
 #define TAA3040_REG_DSP_CONFIG1                     0x6C
+
+/* === AGC Config (Page 0) === */
+#define TAA3040_REG_AGC_CONFIG                      0x70
 
 /* === Channel Enable (Page 0) === */
 #define TAA3040_REG_IN_CHANNEL_EN                   0x73  ///< Input channel enabling 
@@ -231,7 +241,7 @@
 #define TAA3040_GPO2_VALUE_SHIFT                    (0x6)
 #define TAA3040_GPO2_VALUE_MASK                     (0x1 << TAA3040_GPO2_VALUE_SHIFT)
 #define TAA3040_GPO3_VALUE_SHIFT                    (0x5)
-#define TAA3040_GPO4_VALUE_MASK                     (0x1 << TAA3040_GPO3_VALUE_SHIFT)
+#define TAA3040_GPO3_VALUE_MASK                     (0x1 << TAA3040_GPO3_VALUE_SHIFT)
 #define TAA3040_GPO4_VALUE_SHIFT                    (0x4)
 #define TAA3040_GPO4_VALUE_MASK                     (0x1 << TAA3040_GPO4_VALUE_SHIFT)
 
@@ -257,7 +267,7 @@
 #define TAA3040_GPI2_MONITOR_SHIFT                  (0x6)
 #define TAA3040_GPI2_MONITOR_MASK                   (0x1 << TAA3040_GPI2_MONITOR_SHIFT)
 #define TAA3040_GPI3_MONITOR_SHIFT                  (0x5)
-#define TAA3040_GPI4_MONITOR_MASK                   (0x1 << TAA3040_GPI3_MONITOR_SHIFT)
+#define TAA3040_GPI3_MONITOR_MASK                   (0x1 << TAA3040_GPI3_MONITOR_SHIFT)
 #define TAA3040_GPI4_MONITOR_SHIFT                  (0x4)
 #define TAA3040_GPI4_MONITOR_MASK                   (0x1 << TAA3040_GPI4_MONITOR_SHIFT)
 
@@ -313,13 +323,21 @@
 #define TAA3040_CHANNEL_PHASE_CAL_SHIFT             (0x0)
 #define TAA3040_CHANNEL_PHASE_CAL_MASK              (0xFF << TAA3040_CHANNEL_PHASE_CAL_SHIFT) 
 
+/* --- DSP Config (0x6B) --- */
+#define TAA3040_DECIMATION_FILTER_SHIFT             (0x4)
+#define TAA3040_DECIMATION_FILTER_MASK              (0x3 << TAA3040_DECIMATION_FILTER_SHIFT)
+#define TAA3040_CHANNEL_SUM_MODE_SHIFT              (2)
+#define TAA3040_CHANNEL_SUM_MODE_MASK               (0x3 << TAA3040_CHANNEL_SUM_MODE_SHIFT)
+#define TAA3040_HIGH_PASS_FILTER_SHIFT              (0)
+#define TAA3040_HIGH_PASS_FILTER_MASK               (0x3 << TAA3040_HIGH_PASS_FILTER_SHIFT)
+
 /* --- DSP Config (0x6C) --- */
 #define TAA3040_VOLUME_GANGED_SHIFT                 (7)
 #define TAA3040_VOLUME_GANGED_MASK                  (0x1 << TAA3040_VOLUME_GANGED_SHIFT)
 #define TAA3040_BIQUAD_COUNT_SHIFT                  (5)
 #define TAA3040_BIQUAD_COUNT_MASK                   (0x3 << TAA3040_BIQUAD_COUNT_SHIFT)
-#define TAA3040_SOFT_SWEEP_SHIFT                    (4)
-#define TAA3040_SOFT_SWEEP_MASK                     (0x1 <<< TAA3040_SOFT_SWEEP_SHIFT)
+#define TAA3040_SOFT_STEP_SHIFT                     (4)
+#define TAA3040_SOFT_STEP_MASK                      (0x1 << TAA3040_SOFT_STEP_SHIFT)
 #define TAA3040_AGC_SELECT_SHIFT                    (3)
 #define TAA3040_AGC_SELECT_MASK                     (0x1 << TAA3040_AGC_SELECT_SHIFT)
 
@@ -377,7 +395,7 @@
 #define TAA3040_MIC_BIAS_ENABLE_SHIFT               (7)
 #define TAA3040_MIC_BIAS_ENABLE_MASK                (0x1 << TAA3040_MIC_BIAS_ENABLE_SHIFT)
 
-/* --- Input Status Register (0x77) ---*/
+/* --- Input Status Register (0x76) ---*/
 #define TAA3040_CHANNEL1_STATUS_SHIFT               (0x7)
 #define TAA3040_CHANNEL1_STATUS_MASK                (0x1 << TAA3040_CHANNEL1_STATUS_SHIFT)
 #define TAA3040_CHANNEL2_STATUS_SHIFT               (0x6)
@@ -394,6 +412,10 @@
 #define TAA3040_CHANNEL7_STATUS_MASK                (0x1 << TAA3040_CHANNEL7_STATUS_SHIFT)
 #define TAA3040_CHANNEL8_STATUS_SHIFT               (0x0)
 #define TAA3040_CHANNEL8_STATUS_MASK                (0x1 << TAA3040_CHANNEL8_STATUS_SHIFT)
+
+/* --- Device Status Register (0x77) --- */
+#define TAA3040_MODE_STATUS_SHIFT                   (5)
+#define TAA3040_MODE_STATUS_MASK                    (0x7 << TAA3040_MODE_STATUS_SHIFT)
 
 /* --- IIR Config (Page 4, 0x10) --- */
 #define TAA3040_IIR_ENABLE_MASK                     (0x01) ///< Bit 0
