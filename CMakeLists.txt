@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.16)
 
-if(IDF_PROJECT)
+if(IDF_VERSION_MAJOR GREATER_EQUAL 4)
 
     idf_component_register(
         SRCS src/taa3040.c
@@ -16,6 +16,5 @@ else()
 
     add_library(${PROJECT_NAME} STATIC src/taa3040.c)
     target_include_directories(${PROJECT_NAME} PUBLIC include)
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
 
 endif()
