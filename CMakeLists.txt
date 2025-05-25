@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.16)
 if(IDF_VERSION_MAJOR GREATER_EQUAL 4)
 
     idf_component_register(
-        SRCS src/taa3040.c
-        INCLUDE_DIRS include
+        SRCS ./src/taa3040.c
+        INCLUDE_DIRS ./include
     )
 
 else()
