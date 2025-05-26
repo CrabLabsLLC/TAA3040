@@ -62,7 +62,7 @@ bool taa3040_wake(const taa3040_t *const dev);
  * @param[in] dev Device handle.
  * @return true if successful, false otherwise.
  */
-bool taa3040_power_on(const taa3040_t*const dev);
+bool taa3040_startup(const taa3040_t*const dev);
 
 /**
  * @brief Disable the device using external control (if available).
@@ -70,7 +70,7 @@ bool taa3040_power_on(const taa3040_t*const dev);
  * @param[in] dev Device handle.
  * @return true if successful, false otherwise.
  */
-bool taa3040_power_off(const taa3040_t* const dev);
+bool taa3040_shutdown(const taa3040_t* const dev);
 
 /* === Global Device Configuration === */
 

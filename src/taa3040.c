@@ -79,24 +79,29 @@ bool taa3040_wake(const taa3040_t *const dev)
         && taa3040_write_reg(dev, TAA3040_REG_SLEEP_CFG, cfg & ~TAA3040_SLEEP_ENABLE_MASK);
 }
 
-bool taa3040_power_on(const taa3040_t *const dev) 
+bool taa3040_startup(const taa3040_t *const dev) 
 {
 #ifndef TAA3040_REDUCED_HAL
-    if (dev->hal.enable_write) dev->hal.enable_write(true);
+    if (dev->hal.enable_write) 
+    dev->hal.enable_write(true);
 #endif
     uint8_t cfg;
-    return taa3040_select_page(dev,0)
+    bool stat = taa3040_select_page(dev,0)
         && taa3040_read_reg(dev, TAA3040_REG_SHUTDOWN_CFG, &cfg)
         && taa3040_write_reg(dev, TAA3040_REG_SHUTDOWN_CFG, cfg & ~TAA3040_SHDNZ_CFG_MASK);
+
+    return stat && taa3040_write_reg(dev, TAA3040_REG_POWER_CONFIG, 0xff); // powers up everything
 }
 
-bool taa3040_power_off(const taa3040_t *const dev) 
+bool taa3040_shutdown(const taa3040_t *const dev) 
 {
 #ifndef TAA3040_REDUCED_HAL
     if (dev->hal.enable_write) dev->hal.enable_write(false);
 #endif
     uint8_t cfg;
-    return taa3040_select_page(dev,0)
+    bool stat = taa3040_write_reg(dev, TAA3040_REG_POWER_CONFIG, 0x00);
+    return stat 
+        && taa3040_select_page(dev,0)
         && taa3040_read_reg(dev, TAA3040_REG_SHUTDOWN_CFG, &cfg)
         && taa3040_write_reg(dev, TAA3040_REG_SHUTDOWN_CFG, cfg | TAA3040_SHDNZ_CFG_MASK);
 }
@@ -148,8 +153,8 @@ bool taa3040_set_asi_config(const taa3040_t *const dev, const taa3040_asi_config
     for(uint8_t channel = 0; channel < TAA3040_NUM_CHANNELS; ++channel)
     {
         const taa3040_asi_channel_config_t* cc = &a->channel_configs[channel];
-        uint8_t v = ((cc->slot<<TAA3040_ASI_CHANNEL_SLOT_SHIFT) & TAA3040_ASI_CHANNEL_SLOT_MASK)
-                 |  (cc->gpio_output? TAA3040_ASI_CHANNEL_OUTPUT_MASK : 0);
+        const uint8_t v   = ((cc->slot << TAA3040_ASI_CHANNEL_SLOT_SHIFT) & TAA3040_ASI_CHANNEL_SLOT_MASK)
+                    |  (cc->gpio_output? TAA3040_ASI_CHANNEL_OUTPUT_MASK : 0);
 
         if (cc->enabled)
             channel_en |= (1 << (TAA3040_NUM_CHANNELS - channel - 1));
@@ -248,9 +253,9 @@ bool taa3040_set_channel_config(const taa3040_t *const dev, uint8_t ch, const ta
     
     const uint8_t config_reg = TAA3040_REG_CH_CONFIG(ch);
     const uint8_t cfg0 = (c->automatic_gain_control? TAA3040_CHANNEL_AGC_EN_MASK : 0)
-                 | ((c->input_impedance << TAA3040_CHANNEL_IMPEDANCE_SHIFT) & TAA3040_CHANNEL_IMPEDANCE_MASK)
-                 | (c->dc_coupled? TAA3040_CHANNEL_COUPLING_MASK : 0)
-                 | ((c->mode << TAA3040_CHANNEL_SOURCE_SHIFT) & TAA3040_CHANNEL_SOURCE_MASK);
+                        | ((c->input_impedance << TAA3040_CHANNEL_IMPEDANCE_SHIFT) & TAA3040_CHANNEL_IMPEDANCE_MASK)
+                        | (c->dc_coupled? TAA3040_CHANNEL_COUPLING_MASK : 0)
+                        | ((c->mode << TAA3040_CHANNEL_SOURCE_SHIFT) & TAA3040_CHANNEL_SOURCE_MASK);
     if(!taa3040_write_reg(dev, config_reg, cfg0))
         return false;
 
@@ -271,7 +276,10 @@ bool taa3040_set_channel_config(const taa3040_t *const dev, uint8_t ch, const ta
     
     const uint8_t phase_cal_reg = TAA3040_REG_CH_PHASE_CAL(ch);
     const uint8_t cfg4 = (c->advanced.phase_calibration << TAA3040_CHANNEL_PHASE_CAL_SHIFT) & TAA3040_CHANNEL_PHASE_CAL_MASK;
-    return taa3040_write_reg(dev, phase_cal_reg, cfg4);
+    if(!taa3040_write_reg(dev, phase_cal_reg, cfg4))
+        return false;
+
+    return c->enabled? taa3040_enable_channel(dev, ch): true;
 }
 bool taa3040_get_channel_config(const taa3040_t *const dev, uint8_t ch, taa3040_channel_config_t *const c) 
 {
