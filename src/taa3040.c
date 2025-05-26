@@ -17,7 +17,8 @@
 /* --- Internal Helpers --- */
 static bool taa3040_select_page(const taa3040_t *const dev, uint8_t page) 
 {
-    return dev->hal.i2c_write(dev->address, TAA3040_REG_PAGE_SELECT, &page, 1);
+    if(!dev->hal.i2c_write(dev->address, TAA3040_REG_PAGE_SELECT, &page, 1))
+        return false;
 }
 
 static bool taa3040_write_reg(const taa3040_t *const dev, uint8_t reg, uint8_t val) 
