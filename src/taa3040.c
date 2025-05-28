@@ -14,24 +14,25 @@
 #include "taa3040_registers.h"
 #include <string.h>
 
+#include <stdio.h>
+
 /* --- Internal Helpers --- */
-static bool taa3040_select_page(const taa3040_t *const dev, uint8_t page) 
+static inline bool taa3040_select_page(const taa3040_t *const dev, const uint8_t page) 
 {
-    if(!dev->hal.i2c_write(dev->address, TAA3040_REG_PAGE_SELECT, &page, 1))
-        return false;
+    return dev->hal.i2c_write(dev->address, TAA3040_REG_PAGE_SELECT, &page, 1);
 }
 
-static bool taa3040_write_reg(const taa3040_t *const dev, uint8_t reg, uint8_t val) 
+static inline bool taa3040_write_reg(const taa3040_t *const dev, const uint8_t reg, const uint8_t val) 
 {
     return dev->hal.i2c_write(dev->address, reg, &val, 1);
 }
 
-static bool taa3040_read_reg(const taa3040_t *const dev, uint8_t reg, uint8_t *val) 
+static inline bool taa3040_read_reg(const taa3040_t *const dev, const uint8_t reg, uint8_t* const val) 
 {
-    return dev->hal.i2c_read(dev->address, reg, &val, 1);
+    return dev->hal.i2c_read(dev->address, reg, val, 1);
 }
 
-static bool taa3040_write_i32(const taa3040_t *const dev, uint8_t reg, int32_t v) 
+static inline bool taa3040_write_i32(const taa3040_t *const dev, const uint8_t reg, const int32_t v) 
 {
     uint8_t b[4] = { (uint8_t)(v >> 24), (uint8_t)(v >> 16), (uint8_t)(v >> 8), (uint8_t)v };
     if(!dev->hal.i2c_write(dev->address, reg, b, 1))
@@ -39,7 +40,7 @@ static bool taa3040_write_i32(const taa3040_t *const dev, uint8_t reg, int32_t v
     return true;
 }
 
-static bool taa3040_read_i32(const taa3040_t *const dev, uint8_t reg, int32_t *v) 
+static inline bool taa3040_read_i32(const taa3040_t *const dev, const uint8_t reg, int32_t* const v) 
 {    
     uint8_t b[4];
     if (!dev->hal.i2c_read(dev->address, reg, b, 4)) 
@@ -62,49 +63,49 @@ bool taa3040_init(taa3040_t *const dev, const taa3040_hal_t *const hal, const ui
     return taa3040_select_page(dev, 0);
 }
 
-bool taa3040_reset(const taa3040_t *const dev) 
+inline bool taa3040_reset(const taa3040_t *const dev) 
 {
     return taa3040_select_page(dev, 0) && taa3040_write_reg(dev, TAA3040_REG_SW_RESET, TAA3040_SW_RESET_MASK);
 }
 
-bool taa3040_sleep(const taa3040_t *const dev) 
+inline bool taa3040_sleep(const taa3040_t *const dev) 
 {
-    return taa3040_select_page(dev,0) && taa3040_write_reg(dev, TAA3040_REG_SLEEP_CFG, TAA3040_SLEEP_ENABLE_MASK);
+    uint8_t sleep_reg = 0;
+    if(!taa3040_read_reg(dev, TAA3040_REG_SLEEP_CFG, &sleep_reg))
+    {
+        return false;
+    }
+    const uint8_t sleep_reg_value = (sleep_reg & ~TAA3040_SLEEP_DISABLE_MASK);
+    return taa3040_write_reg(dev, TAA3040_REG_SLEEP_CFG, sleep_reg_value);
 }
 
-bool taa3040_wake(const taa3040_t *const dev) 
+inline bool taa3040_wake(const taa3040_t *const dev) 
 {
-    uint8_t cfg;
-    return taa3040_select_page(dev, 0)
-        && taa3040_read_reg(dev, TAA3040_REG_SLEEP_CFG, &cfg)
-        && taa3040_write_reg(dev, TAA3040_REG_SLEEP_CFG, cfg & ~TAA3040_SLEEP_ENABLE_MASK);
+    uint8_t cfg = 0;
+    if(!taa3040_read_reg(dev, TAA3040_REG_SLEEP_CFG, &cfg))
+    {
+        return false;
+    }
+    const uint8_t sleep_reg = (cfg | TAA3040_SLEEP_DISABLE_MASK);
+    return taa3040_write_reg(dev, TAA3040_REG_SLEEP_CFG, sleep_reg);
 }
 
-bool taa3040_startup(const taa3040_t *const dev) 
+inline bool taa3040_startup(const taa3040_t *const dev) 
 {
 #ifndef TAA3040_REDUCED_HAL
     if (dev->hal.enable_write) 
-    dev->hal.enable_write(true);
+        dev->hal.enable_write(true);
 #endif
-    uint8_t cfg;
-    bool stat = taa3040_select_page(dev,0)
-        && taa3040_read_reg(dev, TAA3040_REG_SHUTDOWN_CFG, &cfg)
-        && taa3040_write_reg(dev, TAA3040_REG_SHUTDOWN_CFG, cfg & ~TAA3040_SHDNZ_CFG_MASK);
-
-    return stat && taa3040_write_reg(dev, TAA3040_REG_POWER_CONFIG, 0xff); // powers up everything
+    return true; // powers up everything
 }
 
-bool taa3040_shutdown(const taa3040_t *const dev) 
+inline bool taa3040_shutdown(const taa3040_t *const dev) 
 {
 #ifndef TAA3040_REDUCED_HAL
-    if (dev->hal.enable_write) dev->hal.enable_write(false);
+    if (dev->hal.enable_write) 
+        dev->hal.enable_write(false);
 #endif
-    uint8_t cfg;
-    bool stat = taa3040_write_reg(dev, TAA3040_REG_POWER_CONFIG, 0x00);
-    return stat 
-        && taa3040_select_page(dev,0)
-        && taa3040_read_reg(dev, TAA3040_REG_SHUTDOWN_CFG, &cfg)
-        && taa3040_write_reg(dev, TAA3040_REG_SHUTDOWN_CFG, cfg | TAA3040_SHDNZ_CFG_MASK);
+    return true;
 }
 
 /* === ASI Configuration === */
@@ -114,50 +115,54 @@ bool taa3040_set_asi_config(const taa3040_t *const dev, const taa3040_asi_config
         return false;
 
     taa3040_select_page(dev,0);
-    const uint8_t config0 = ((a->mode<<TAA3040_ASI_FORMAT_SHIFT) & TAA3040_ASI_FORMAT_MASK)
-                          | ((a->word_length << TAA3040_ASI_WORD_LENGTH_SHIFT) & TAA3040_ASI_WORD_LENGTH_MASK)
-                          | (a->fsync_polarity? TAA3040_FSYNC_POLARITY_MASK : 0)
-                          | (a->bclk_polarity? TAA3040_BLCK_POLARITY_MASK : 0)
-                          | (a->transmit_edge? TAA3040_TRANSMIT_EDGE_MASK : 0)
-                          | (a->fill_zeros? TAA3040_TRANSMIT_FILL_MASK : 0);
+    const uint8_t config0 = ((a->mode << TAA3040_ASI_FORMAT_SHIFT) & TAA3040_ASI_FORMAT_MASK)
+                        |   ((a->word_length << TAA3040_ASI_WORD_LENGTH_SHIFT) & TAA3040_ASI_WORD_LENGTH_MASK)
+                        |   (a->fsync_polarity_inverted? TAA3040_FSYNC_POLARITY_MASK : 0)
+                        |   (a->bclk_polarity_inverted? TAA3040_BLCK_POLARITY_MASK : 0)
+                        |   (a->transmit_edge_inverted? TAA3040_TRANSMIT_EDGE_MASK : 0)
+                        |   (a->fill_zeros? TAA3040_TRANSMIT_FILL_MASK : 0);
+
     if (!taa3040_write_reg(dev, TAA3040_REG_ASI_CONFIG0, config0)) 
         return false;
 
     const uint8_t config1 = (a->advanced.transmit_lsb_hiz ? TAA3040_TRANSMIT_LSB_MASK : 0)
-                          | ((a->advanced.keeper_mode << TAA3040_TRANSMIT_KEEPER_SHIFT) & TAA3040_TRANSMIT_KEEPER_MASK)
-                          | ((a->advanced.transmission_offset_cycles << TAA3040_TRANSMIT_OFFSET_SHIFT) & TAA3040_TRANSMIT_OFFSET_MASK);
+                        |   ((a->advanced.keeper_mode << TAA3040_TRANSMIT_KEEPER_SHIFT) & TAA3040_TRANSMIT_KEEPER_MASK)
+                        |   ((a->advanced.transmission_offset_cycles << TAA3040_TRANSMIT_OFFSET_SHIFT) & TAA3040_TRANSMIT_OFFSET_MASK);
+
     if (!taa3040_write_reg(dev, TAA3040_REG_ASI_CONFIG1, config1)) 
         return false;
 
-    uint8_t config2 = (a->advanced.daisy_chain_connection? TAA3040_ASI_DAISY_MASK : 0)
-                    | (a->advanced.error_detection? TAA3040_ASI_ERROR_MASK : 0)
-                    | (a->advanced.error_recovery? TAA3040_ASI_ERROR_RECOVERY_MASK : 0);
+    const uint8_t config2 = (a->advanced.daisy_chain_connection? TAA3040_ASI_DAISY_MASK : 0)
+                        |   (a->advanced.error_detection? 0: TAA3040_ASI_ERROR_MASK)
+                        |   (a->advanced.error_recovery? 0: TAA3040_ASI_ERROR_RECOVERY_MASK);
+
     if (!taa3040_write_reg(dev, TAA3040_REG_ASI_CONFIG2, config2))
         return false;
 
-    uint8_t master0 = (a->slave_mode? 0: TAA3040_MASTER_SLAVE_CONFIG_MASK)
-                    | ((a->master_mode.sample_rate << TAA3040_SAMPLE_RATE_SHIFT) & TAA3040_SAMPLE_RATE_MASK)
-                    | ((a->master_mode.mclk_fsync_ratio << TAA3040_FSYNC_BCLK_RATIO_SHIFT) & TAA3040_FSYNC_BCLK_RATIO_MASK)
-                    | (a->master_mode.sample_rate_48khz? TAA3040_SAMPLE_RATE_MASK : 0)
-                    | (a->master_mode.automatic_clock_config? TAA3040_AUTO_CLOCK_CONFIG_MASK : 0)
-                    | (a->master_mode.pll_disabled_autoclock? TAA3040_AUTO_MODE_PLL_MASK : 0)
-                    | (a->master_mode.gate_clocks? TAA3040_BCLK_FSYNC_GATE_MASK : 0);
+    const uint8_t master0 = (a->slave_mode? 0: TAA3040_MASTER_SLAVE_CONFIG_MASK)
+                        |   (a->master_mode.sample_rate_48khz? 0: TAA3040_SAMPLE_RATE_MASK)
+                        |   (a->master_mode.automatic_clock_config? 0: TAA3040_AUTO_CLOCK_CONFIG_MASK)
+                        |   (a->master_mode.pll_disabled_autoclock? TAA3040_AUTO_MODE_PLL_MASK : 0)
+                        |   (a->master_mode.gate_clocks? TAA3040_BCLK_FSYNC_GATE_MASK : 0)
+                        |   ((a->master_mode.mclk_freq << TAA3040_MCLK_FREQ_SELECT_SHIFT) & TAA3040_MCLK_FREQ_SELECT_MASK);
+
     if (!taa3040_write_reg(dev, TAA3040_REG_MASTER_CONFIG0, master0))
         return false;
 
-    uint8_t master1 = ((a->master_mode.mclk_fsync_ratio << TAA3040_FSYNC_BCLK_RATIO_SHIFT) & TAA3040_FSYNC_BCLK_RATIO_MASK)
-                    | ((a->master_mode.sample_rate << TAA3040_FSYNC_RATE_SHIFT) & TAA3040_FSYNC_RATE_MASK);
+    const uint8_t master1 = ((a->master_mode.bclk_fsync_ratio << TAA3040_FSYNC_BCLK_RATIO_SHIFT) & TAA3040_FSYNC_BCLK_RATIO_MASK)
+                        |   ((a->master_mode.sample_rate << TAA3040_FSYNC_RATE_SHIFT) & TAA3040_FSYNC_RATE_MASK);
+
     if (!taa3040_write_reg(dev, TAA3040_REG_MASTER_CONFIG1, master1)) 
         return false;
 
     uint8_t channel_en = 0;
     for(uint8_t channel = 0; channel < TAA3040_NUM_CHANNELS; ++channel)
     {
-        const taa3040_asi_channel_config_t* cc = &a->channel_configs[channel];
-        const uint8_t v   = ((cc->slot << TAA3040_ASI_CHANNEL_SLOT_SHIFT) & TAA3040_ASI_CHANNEL_SLOT_MASK)
-                    |  (cc->gpio_output? TAA3040_ASI_CHANNEL_OUTPUT_MASK : 0);
+        const taa3040_asi_channel_config_t cc = a->channel_configs[channel];
+        const uint8_t v  = ((cc.slot << TAA3040_ASI_CHANNEL_SLOT_SHIFT) & TAA3040_ASI_CHANNEL_SLOT_MASK)
+                        |  (cc.gpio_output? TAA3040_ASI_CHANNEL_OUTPUT_MASK : 0);
 
-        if (cc->enabled)
+        if (cc.enabled)
             channel_en |= (1 << (TAA3040_NUM_CHANNELS - channel - 1));
         
         if(!taa3040_write_reg(dev, TAA3040_REG_ASI_CHANNEL_BASE + channel, v))
@@ -183,9 +188,9 @@ bool taa3040_get_asi_config(const taa3040_t *const dev, taa3040_asi_config_t *co
     
     a->mode = (config0 & TAA3040_ASI_FORMAT_MASK) >> TAA3040_ASI_FORMAT_SHIFT;
     a->word_length = (config0 & TAA3040_ASI_WORD_LENGTH_MASK) >> TAA3040_ASI_WORD_LENGTH_SHIFT;
-    a->fsync_polarity = !!(config0 & TAA3040_FSYNC_POLARITY_MASK);
-    a->bclk_polarity = !!(config0 & TAA3040_BLCK_POLARITY_MASK);
-    a->transmit_edge = !!(config0 & TAA3040_TRANSMIT_EDGE_MASK);
+    a->fsync_polarity_inverted = !!(config0 & TAA3040_FSYNC_POLARITY_MASK);
+    a->bclk_polarity_inverted = !!(config0 & TAA3040_BLCK_POLARITY_MASK);
+    a->transmit_edge_inverted = !!(config0 & TAA3040_TRANSMIT_EDGE_MASK);
     a->fill_zeros = !!(config0 & TAA3040_TRANSMIT_FILL_MASK);
     
     uint8_t config1;
@@ -256,7 +261,8 @@ bool taa3040_set_channel_config(const taa3040_t *const dev, uint8_t ch, const ta
     const uint8_t cfg0 = (c->automatic_gain_control? TAA3040_CHANNEL_AGC_EN_MASK : 0)
                         | ((c->input_impedance << TAA3040_CHANNEL_IMPEDANCE_SHIFT) & TAA3040_CHANNEL_IMPEDANCE_MASK)
                         | (c->dc_coupled? TAA3040_CHANNEL_COUPLING_MASK : 0)
-                        | ((c->mode << TAA3040_CHANNEL_SOURCE_SHIFT) & TAA3040_CHANNEL_SOURCE_MASK);
+                        | ((c->mode << TAA3040_CHANNEL_SOURCE_SHIFT) & TAA3040_CHANNEL_SOURCE_MASK)
+                        | (c->is_microphone? 0: TAA3040_CHANNEL_INPUT_TYPE_MASK);
     if(!taa3040_write_reg(dev, config_reg, cfg0))
         return false;
 
@@ -570,6 +576,48 @@ bool taa3040_get_dsp_config(const taa3040_t* const dev, taa3040_dsp_config_t* co
     return true;
 }
 
+bool taa3040_set_system_config(const taa3040_t* const dev, const taa3040_system_config_t* const config)
+{
+    if(!taa3040_select_page(dev, 0))
+    {
+        return 1;
+    }
+
+    const uint8_t pwr_reg = (config->adc_enabled? TAA3040_ADC_ENABLE_MASK: 0)
+                        |   (config->pll_enabled? TAA3040_PLL_ENABLE_MASK: 0)
+                        |   (config->mic_bias_enabled? TAA3040_MIC_BIAS_ENABLE_MASK: 0)
+                        |   (config->dynamic_power_mode? TAA3040_DYNAMIC_POWER_MASK: 0)
+                        |   ((config->advanced.dynamic_mode_channels << TAA3040_DYNAMIC_POWER_CHANNELS_SHIFT) & TAA3040_DYNAMIC_POWER_CHANNELS_MASK);
+
+    if(!taa3040_write_reg(dev, TAA3040_REG_POWER_CONFIG, pwr_reg))
+    {
+        return false;
+    }
+
+    uint8_t sleep_cfg;
+    if(!taa3040_read_reg(dev, TAA3040_REG_SLEEP_CFG, &sleep_cfg))
+    {
+        return false;
+    }
+
+    const uint8_t sleep_cfg_reg  =  (config->avdd_is_3v3? TAA3040_AREG_SELECT_MASK: 0)
+                                |   ((config->advanced.vref_qc_time << TAA3040_VREF_QCHRG_SHIFT) & TAA3040_VREF_QCHRG_MASK);
+
+    if (!taa3040_write_reg(dev, TAA3040_REG_SLEEP_CFG, sleep_cfg_reg))
+    {
+        return false;
+    }
+
+    const uint8_t shutdown_cfg =    ((config->shutdown_mode << TAA3040_SHDNZ_CFG_SHIFT) & TAA3040_SHDNZ_CFG_MASK)
+                                |   ((config->advanced.input_qc_time << TAA3040_INCAP_QCHG_SHIFT) & TAA3040_INCAP_QCHG_MASK)
+                                |   ((config->advanced.dreg_shutdown_time << TAA3040_DREG_KA_TIME_SHIFT) & TAA3040_DREG_KA_TIME_MASK);
+    if(!taa3040_write_reg(dev, TAA3040_REG_SHUTDOWN_CFG, shutdown_cfg))
+    {
+        return false;
+    }
+
+    return true;
+}
 
 bool taa3040_get_filter(const taa3040_t* const dev, const uint8_t index, taa3040_biquad_filter_t* const filter)
 {
@@ -620,6 +668,7 @@ bool taa3040_set_gain_db(const taa3040_t *const dev, uint8_t ch, uint8_t g)
     const uint8_t v = (g << TAA3040_CHANNEL_GAIN_SHIFT) & TAA3040_CHANNEL_GAIN_MASK;
     return taa3040_write_reg(dev, TAA3040_REG_CH_GAIN(ch), v);
 }
+
 bool taa3040_get_gain_db(const taa3040_t *const dev, uint8_t ch, uint8_t *g) 
 {
     if(!dev || !g || ch >= TAA3040_NUM_CHANNELS) 
@@ -630,6 +679,7 @@ bool taa3040_get_gain_db(const taa3040_t *const dev, uint8_t ch, uint8_t *g)
     *g = (v & TAA3040_CHANNEL_GAIN_MASK) >> TAA3040_CHANNEL_GAIN_SHIFT;
     return true;
 }
+
 bool taa3040_set_digital_volume(const taa3040_t *const dev, uint8_t ch, uint8_t vcode) 
 {
     if(!dev || ch >= TAA3040_NUM_CHANNELS) 
@@ -637,6 +687,7 @@ bool taa3040_set_digital_volume(const taa3040_t *const dev, uint8_t ch, uint8_t 
 
     return taa3040_write_reg(dev, TAA3040_REG_CH_VOLUME(ch), vcode & TAA3040_CHANNEL_VOLUME_MASK);
 }
+
 bool taa3040_get_digital_volume(const taa3040_t *const dev, uint8_t ch, uint8_t *vcode) 
 {
     if(!dev || !vcode || ch >= TAA3040_NUM_CHANNELS) 
@@ -649,6 +700,7 @@ bool taa3040_get_digital_volume(const taa3040_t *const dev, uint8_t ch, uint8_t 
     *vcode = v & TAA3040_CHANNEL_VOLUME_MASK;
     return true;
 }
+
 bool taa3040_enable_channel(const taa3040_t* const dev, const uint8_t ch) 
 {
     if(!dev || ch >= TAA3040_NUM_CHANNELS)
@@ -658,8 +710,21 @@ bool taa3040_enable_channel(const taa3040_t* const dev, const uint8_t ch)
     if(!taa3040_read_reg(dev, TAA3040_REG_IN_CHANNEL_EN, &v))
         return false;
     
-    v |= (1 << (TAA3040_NUM_CHANNELS - ch - 1));
-    return taa3040_write_reg(dev, TAA3040_REG_IN_CHANNEL_EN, v);
+    const uint8_t reg_val = (v | (1 << (TAA3040_NUM_CHANNELS - ch - 1)));
+    return taa3040_write_reg(dev, TAA3040_REG_ASI_OUT_CHANNEL_EN, reg_val);
+}
+
+bool taa3040_disable_channel(const taa3040_t* const dev, const uint8_t channel)
+{
+    if(!dev || channel >= TAA3040_NUM_CHANNELS)
+        return false;
+    
+    uint8_t v = 0; 
+    if(!taa3040_read_reg(dev, TAA3040_REG_IN_CHANNEL_EN, &v))
+        return false;
+    
+    const uint8_t reg_val = (v & ~(1 << (TAA3040_NUM_CHANNELS - channel - 1)));
+    return taa3040_write_reg(dev, TAA3040_REG_ASI_OUT_CHANNEL_EN, reg_val);
 }
 
 /* === Device Status & Config Snapshot === */
@@ -669,13 +734,9 @@ bool taa3040_get_status(const taa3040_t *const dev, taa3040_status_t *status)
         return false;
 
     taa3040_select_page(dev, 0);
-
-    uint8_t v; 
-    if(!taa3040_read_reg(dev, TAA3040_REG_DEV_STS0, &v))
-        return false;
     
-    status->device_status = (taa3040_device_status_t)((v & TAA3040_MODE_STATUS_MASK) >> TAA3040_MODE_STATUS_SHIFT);
-    
+    // status->device_status = (taa3040_device_status_t)((v & TAA3040_MODE_STATUS_MASK) >> TAA3040_MODE_STATUS_SHIFT);
+    uint8_t v;
     if(!taa3040_read_reg(dev, TAA3040_REG_STATUS1, &v))
         return false;
     

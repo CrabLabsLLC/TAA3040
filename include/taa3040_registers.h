@@ -21,8 +21,6 @@
 #define TAA3040_REG_SLEEP_CFG                       0x02 ///< Sleep configuration
 #define TAA3040_REG_SHUTDOWN_CFG                    0x05 ///< Shutdown configuration
 
-#define TAA3040_REG_DEV_STS0                        0x03 ///< Device status
-
 /* === ASI Interface Registers (Page 0) === */
 #define TAA3040_REG_ASI_CONFIG0                     0x07 ///< ASI/I2S/TDM basic configuration
 #define TAA3040_REG_ASI_CONFIG1                     0x08
@@ -123,8 +121,8 @@
 #define TAA3040_SW_RESET_MASK                       (0x01)
 
 /* --- Sleep Config (0x02) --- */
-#define TAA3040_SLEEP_ENABLE_SHIFT                  (0x0)
-#define TAA3040_SLEEP_ENABLE_MASK                   (0x01 << TAA3040_SLEEP_ENABLE_SHIFT)
+#define TAA3040_SLEEP_DISABLE_SHIFT                 (0x0)
+#define TAA3040_SLEEP_DISABLE_MASK                  (0x01 << TAA3040_SLEEP_DISABLE_SHIFT)
 #define TAA3040_I2C_BROADCAST_SHIFT                 (0x2)
 #define TAA3040_I2C_BROADCAST_MASK                  (0x01 << TAA3040_SLEEP_ENABLE_SHIFT)
 #define TAA3040_VREF_QCHRG_SHIFT                    (0x3)
@@ -141,9 +139,9 @@
 #define TAA3040_INCAP_QCHG_MASK                     (0x3 << TAA3040_INCAP_QCHG_SHIFT)
 
 /* --- ASI Config (0x7) --- */
-#define TAA3040_ASI_FORMAT_SHIFT                    (0)
+#define TAA3040_ASI_FORMAT_SHIFT                    (6)
 #define TAA3040_ASI_FORMAT_MASK                     (0x03 << TAA3040_ASI_FORMAT_SHIFT) ///< Bits 1:0
-#define TAA3040_ASI_WORD_LENGTH_SHIFT               (2)
+#define TAA3040_ASI_WORD_LENGTH_SHIFT               (4)
 #define TAA3040_ASI_WORD_LENGTH_MASK                (0x3 << TAA3040_ASI_WORD_LENGTH_SHIFT) ///< Bits 3:2
 #define TAA3040_FSYNC_POLARITY_SHIFT                (3)
 #define TAA3040_FSYNC_POLARITY_MASK                 (0x01 << TAA3040_FSYNC_POLARITY_SHIFT)
@@ -157,7 +155,7 @@
 /* --- ASI Config 1 (0x8) --- */
 #define TAA3040_TRANSMIT_LSB_SHIFT                  (0x7)
 #define TAA3040_TRANSMIT_LSB_MASK                   (0x1 << TAA3040_TRANSMIT_LSB_SHIFT)
-#define TAA3040_TRANSMIT_KEEPER_SHIFT               (0x6)
+#define TAA3040_TRANSMIT_KEEPER_SHIFT               (0x5)
 #define TAA3040_TRANSMIT_KEEPER_MASK                (0x3 << TAA3040_TRANSMIT_KEEPER_SHIFT)
 #define TAA3040_TRANSMIT_OFFSET_SHIFT               (0)
 #define TAA3040_TRANSMIT_OFFSET_MASK                (0xF << TAA3040_TRANSMIT_OFFSET_SHIFT)
@@ -172,7 +170,7 @@
 
 /* --- ASI Channels  --- */
 #define TAA3040_ASI_CHANNEL_SLOT_SHIFT              (0)
-#define TAA3040_ASI_CHANNEL_SLOT_MASK               (0x1F << TAA3040_ASI_CHANNEL_SLOT_SHIFT)
+#define TAA3040_ASI_CHANNEL_SLOT_MASK               (0x3F << TAA3040_ASI_CHANNEL_SLOT_SHIFT)
 #define TAA3040_ASI_CHANNEL_OUTPUT_SHIFT            (6)
 #define TAA3040_ASI_CHANNEL_OUTPUT_MASK             (0x1 << TAA3040_ASI_CHANNEL_OUTPUT_SHIFT)
 
@@ -191,7 +189,7 @@
 #define TAA3040_MASTER_SLAVE_CONFIG_MASK            (0x1 << TAA3040_MASTER_SLAVE_CONFIG_SHIFT)
 
 #define TAA3040_FSYNC_BCLK_RATIO_SHIFT              (0)
-#define TAA3040_FSYNC_BCLK_RATIO_MASK               (0x7 << TAA3040_FSYNC_BCLK_RATIO_SHIFT)
+#define TAA3040_FSYNC_BCLK_RATIO_MASK               (0xF << TAA3040_FSYNC_BCLK_RATIO_SHIFT)
 #define TAA3040_FSYNC_RATE_SHIFT                    (4)
 #define TAA3040_FSYNC_RATE_MASK                     (0xF << TAA3040_FSYNC_RATE_SHIFT)
 

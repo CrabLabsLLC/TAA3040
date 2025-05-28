@@ -174,6 +174,8 @@ bool taa3040_set_mixer_config(const taa3040_t *const dev, const taa3040_mixer_co
  */
 bool taa3040_get_mixer_config(const taa3040_t *const dev, taa3040_mixer_config_t *const mixer_config);
 
+bool taa3040_set_system_config(const taa3040_t* const dev, const taa3040_system_config_t* const config);
+
 /**
  * @brief 
  * 

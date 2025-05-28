@@ -86,6 +86,21 @@ typedef enum {
     TAA3040_MCLK_RATIO_2304 = 0x7  ///< MCLK = 2304 × FSYNC
 } taa3040_mclk_ratio_t;
 
+/** @brief MCLK Ratio Settings */
+typedef enum {
+    TAA3040_BCLK_RATIO_16   = 0x0, 
+    TAA3040_BCLK_RATIO_24  = 0x1, 
+    TAA3040_BCLK_RATIO_32  = 0x2,
+    TAA3040_BCLK_RATIO_48  = 0x3, 
+    TAA3040_BCLK_RATIO_64  = 0x4, 
+    TAA3040_BCLK_RATIO_96 = 0x5, 
+    TAA3040_BCLK_RATIO_128 = 0x6, 
+    TAA3040_BCLK_RATIO_192 = 0x7,  
+    TAA3040_BCLK_RATIO_256 = 0x8, 
+    TAA3040_BCLK_RATIO_384 = 0x9, 
+    TAA3040_BCLK_RATIO_512 = 0xA, 
+} taa3040_bclk_ratio_t;
+
 /** @brief PDM Clock Divider Settings */
 typedef enum {
     TAA3040_PDM_CLOCK_3072KHZ = 0x0, ///< 3.072 MHz PDM clock
@@ -341,15 +356,17 @@ typedef struct {
 
     bool slave_mode;                ///< True if device is ASI slave
     bool auto_clock_enabled;        ///< Auto-detect clock rate
-    bool fsync_polarity;            ///< Frame Sync polarity (normal/inverted)
-    bool bclk_polarity;             ///< Bit Clock polarity (normal/inverted)
-    bool transmit_edge;             ///< Data transmit edge (rising/falling)
+    bool fsync_polarity_inverted;   ///< Frame Sync polarity (normal/inverted)
+    bool bclk_polarity_inverted;    ///< Bit Clock polarity (normal/inverted)
+    bool transmit_edge_inverted;    ///< Data transmit edge (rising/falling)
     bool fill_zeros;                ///< Fill empty slots with zeros
 
     struct 
     {
         taa3040_sampling_rate_t sample_rate;    ///< What the ideal sample rate of the ASI bus is 
         taa3040_mclk_ratio_t mclk_fsync_ratio;  ///< What the ratio of FSYNC and MCLK should be
+        taa3040_bclk_ratio_t bclk_fsync_ratio;  ///< 
+        taa3040_mclk_freq_t mclk_freq;          ///< 
 
         bool automatic_clock_config;            ///< If the clock frequency should be automatically generated
         bool pll_disabled_autoclock;            ///< If the PLL is shutoff when auto clock generation is enabled
@@ -379,6 +396,7 @@ typedef struct
     bool mic_bias_enabled;  ///< If the Microphone Bias voltage is enabled (using microphones)
     bool pll_enabled;       ///< If the PLL is enabled (clock generating)
     bool dynamic_power_mode;///< If channel power can be dynamically turned on and off when in an out of use
+    bool avdd_is_3v3;       ///< If the analog voltage it 3.3V and needs to be internally regulated
 
     taa3040_shutdown_dreg_mode_t shutdown_mode; ///< How the digital regulator should behave on shutdown
     struct 
@@ -507,7 +525,7 @@ typedef bool (*taa3040_i2c_write_fn)(const uint8_t address, const uint8_t reg, c
  * @param[out] data Pointer to store the read byte.
  * @return true on success, false on failure.
  */
-typedef bool (*taa3040_i2c_read_fn)(const uint8_t address, const uint8_t reg, void *const data, uint8_t length);
+typedef bool (*taa3040_i2c_read_fn)(const uint8_t address, const uint8_t reg, void* const data, const uint8_t length);
 
 /**
  * @brief GPIO control function type.
@@ -555,13 +573,14 @@ static const taa3040_asi_config_t TAA3040_DEFAULT_ASI_CONFIG =
     .word_length = TAA3040_ASI_WORD_LENGTH_24BITS,
     .slave_mode = false,  // Device set as master by default
     .auto_clock_enabled = true,
-    .fsync_polarity = false,
-    .bclk_polarity = false,
-    .transmit_edge = false,
+    .fsync_polarity_inverted = false,
+    .bclk_polarity_inverted = false,
+    .transmit_edge_inverted = false,
     .fill_zeros = false,
     .master_mode = {
         .sample_rate = TAA3040_SAMPLING_RATE_48KHZ,
-        .mclk_fsync_ratio = TAA3040_MCLK_RATIO_256,
+        .bclk_fsync_ratio = TAA3040_BCLK_RATIO_256,
+        .mclk_freq = TAA3040_MCLK_FREQ_13000KHZ,
         .automatic_clock_config = true,
         .pll_disabled_autoclock = false,
         .gate_clocks = false,
@@ -690,6 +709,7 @@ static const taa3040_system_config_t TAA3040_DEFAULT_SYSTEM_CONFIG =
     .mic_bias_enabled = true,
     .pll_enabled = true,
     .dynamic_power_mode = true,
+    .avdd_is_3v3  = false,
     .shutdown_mode = TAA3040_SHUTDOWN_DREG_MODE_WAIT,
     .advanced = 
     {
@@ -745,13 +765,14 @@ static const taa3040_config_t TAA3040_DEFAULT_CONFIG =
         .word_length = TAA3040_ASI_WORD_LENGTH_24BITS,
         .slave_mode = false,  // Device set as master by default
         .auto_clock_enabled = true,
-        .fsync_polarity = false,
-        .bclk_polarity = false,
-        .transmit_edge = false,
+        .fsync_polarity_inverted = false,
+        .bclk_polarity_inverted = false,
+        .transmit_edge_inverted = false,
         .fill_zeros = false,
         .master_mode = {
             .sample_rate = TAA3040_SAMPLING_RATE_48KHZ,
-            .mclk_fsync_ratio = TAA3040_MCLK_RATIO_256,
+            .bclk_fsync_ratio = TAA3040_BCLK_RATIO_256,
+            .mclk_freq = TAA3040_MCLK_FREQ_13000KHZ,
             .automatic_clock_config = true,
             .pll_disabled_autoclock = false,
             .gate_clocks = false,
@@ -993,6 +1014,7 @@ static const taa3040_config_t TAA3040_DEFAULT_CONFIG =
         .mic_bias_enabled = true,
         .pll_enabled = true,
         .dynamic_power_mode = true,
+        .avdd_is_3v3 = false,
         .shutdown_mode = TAA3040_SHUTDOWN_DREG_MODE_WAIT,
         .advanced = 
         {
